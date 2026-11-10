@@ -14,7 +14,7 @@ El propio usuario. Sabe programación básica (variables, condicionales, funcion
 
 ## Meta de éxito
 
-Al terminar el último módulo, el alumno construyó él mismo una **aplicación completa**: una app de **gastos personales** (registrar gastos, verlos por categoría, filtrar, varias páginas).
+Al terminar el último módulo, el alumno construyó por su cuenta una **aplicación completa**: una app de **gastos personales** (registrar gastos, verlos por categoría, filtrar, varias páginas).
 
 ## Objetivos
 
