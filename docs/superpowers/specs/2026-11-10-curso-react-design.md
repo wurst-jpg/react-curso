@@ -85,6 +85,12 @@ Cada módulo: ~3 a 6 lecciones. Las lecciones se definen como **datos** (no cód
 - Verificación de retos: cada reto declara comprobaciones (p. ej. sobre el DOM renderizado en la vista previa y/o sobre los archivos: "existe `Boton.jsx`", "`App.jsx` importa `Boton`", "hay un botón con texto X", "al hacer clic el contador sube"). El mecanismo concreto queda al constructor (ver abajo), pero debe preferir comprobar **comportamiento/resultado** sobre texto exacto del código.
 - Ubicación: `~/proyectos/curso-react`.
 
+### ESLint (aprobado por el usuario)
+
+- **En la plataforma:** ESLint (config plana, con reglas de React y hooks) forma parte de la calidad: `npm run lint` sin errores es requisito para dar una fase por terminada, junto con las pruebas.
+- **En el curso:** el editor de los retos muestra avisos de ESLint en vivo (subrayado en el código, como en un editor real), p. ej. con el linter de ESLint para navegador integrado en el editor de Sandpack. Los avisos no bloquean el reto; son ayuda.
+- El módulo 0 incluye una lección corta: qué es ESLint y cómo leer sus avisos.
+
 ## Lo que queda a criterio del constructor
 
 - Mecanismo exacto de verificación (tests de Sandpack, mensajes desde el iframe, análisis del código, o combinación).
