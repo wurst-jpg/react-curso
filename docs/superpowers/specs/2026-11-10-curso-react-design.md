@@ -64,6 +64,17 @@ Al terminar el último módulo, el alumno construyó por su cuenta una **aplicac
 | 10 | Navegación | React Router, varias páginas, parámetros |
 | 11 | Proyecto final | App de gastos por etapas, cada etapa un reto grande |
 
+### Proyecto final (módulo 11) — decidido por el usuario: libertad total
+
+- El alumno **diseña su propia estructura**: nombres de archivos, componentes y carpetas los decide el alumno. Los retos de las etapas describen **qué debe lograr la app** (p. ej. "se puede agregar un gasto con descripción, monto y categoría", "se ven los totales por categoría", "hay al menos dos páginas navegables"), nunca cómo nombrar las piezas.
+- Por tanto la verificación de etapas es **solo por comportamiento** sobre la app renderizada (formularios, textos visibles, roles accesibles, navegación), tolerante a estructuras distintas. Se acepta que sea menos estricta; cuando una comprobación no puede decidir, debe dar el beneficio de la duda o ofrecer una autoevaluación con checklist ("¿tu app hace X?") en vez de rechazar.
+- **(Llamada mía, consecuencia de lo anterior)** El código del alumno **se conserva y continúa** de una etapa a la siguiente: es un proyecto que crece. Se guarda en el navegador. Hay un botón "empezar esta etapa desde una versión limpia" con una solución de referencia, por si el código previo quedó enredado.
+- **(Llamada mía)** El código escrito en cualquier reto (no solo el proyecto final) se guarda, para no perder trabajo al recargar; con botón "reiniciar reto".
+
+### Desbloqueo (llamada mía)
+
+Módulos, lecciones y retos se abren en orden estricto; todo lo ya superado se puede repetir libremente. Un módulo se completa al pasar todos sus retos.
+
 Cada módulo: ~3 a 6 lecciones. Las lecciones se definen como **datos** (no código de la plataforma), para poder añadir contenido sin tocar el motor.
 
 ## Decisiones técnicas (llamadas mías, el usuario no las discutió)
