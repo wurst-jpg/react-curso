@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* La vista previa del alumno se ve sobre fondo blanco, como una página normal,
+   aunque el editor use el tema oscuro de Sandpack. */
+.preview-surface .sp-preview-container,
+.preview-surface .sp-preview-iframe {
+  color-scheme: light;
+  background-color: #fff;
+}
+
+/* La capa "cargando" de Sandpack muestra sus avisos en inglés; la ocultamos y la página
+   muestra su propio aviso en español ("Preparando la vista previa…"). */
+.preview-surface .sp-loading {
+  display: none;
+}

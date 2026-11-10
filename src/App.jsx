@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { ProgressProvider } from './progress/ProgressContext.jsx'
+import ChallengePage from './pages/ChallengePage.jsx'
 
 function Inicio() {
   return (
@@ -10,10 +12,13 @@ function Inicio() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Inicio />} />
-      </Routes>
-    </BrowserRouter>
+    <ProgressProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/reto/:challengeId" element={<ChallengePage />} />
+        </Routes>
+      </BrowserRouter>
+    </ProgressProvider>
   )
 }
