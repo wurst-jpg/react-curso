@@ -53,6 +53,11 @@ describe('runFileChecks', () => {
     expect(bad.status).toBe('fail')
     expect(bad.message).toBeTruthy()
   })
+  it('lint-clean solo revisa archivos .js/.jsx', () => {
+    const lintJsOnly = (code) => (code.includes('body{}') ? [{ severity: 2 }] : [])
+    const r = runFileChecks([{ type: 'lint-clean', label: 'l' }], files, { lint: lintJsOnly })[0]
+    expect(r.status).toBe('pass')
+  })
   it('lint que lanza excepción da error', () => {
     const r = runFileChecks([{ type: 'lint-clean', label: 'l' }], files, {
       lint: () => {

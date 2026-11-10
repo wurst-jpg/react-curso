@@ -31,6 +31,18 @@ describe('text', () => {
   })
 })
 
+describe('text ignora código', () => {
+  it('un texto solo dentro de script/style no cuenta', async () => {
+    root.innerHTML = '<p>hola</p><script>var secreto = "xyzscript"</script><style>.xyzstyle{}</style>'
+    const res = await run([
+      { type: 'text', label: 'a', match: 'xyzscript' },
+      { type: 'text', label: 'b', match: 'xyzstyle' },
+      { type: 'text', label: 'c', match: 'hola' },
+    ])
+    expect(res.map((r) => r.status)).toEqual(['fail', 'fail', 'pass'])
+  })
+})
+
 describe('role', () => {
   it('button por <button> y por [role=button], con name', async () => {
     root.innerHTML = '<button>Sumar</button><div role="button" aria-label="Restar"></div>'

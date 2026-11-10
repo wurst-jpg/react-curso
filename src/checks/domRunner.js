@@ -39,8 +39,15 @@ function matchesRole(el, role) {
   return true // el selector ya filtró por etiqueta
 }
 
+// Texto visible: ignora <script>, <style>, <template> y <noscript>.
+function visibleText(el) {
+  const clone = el.cloneNode(true)
+  clone.querySelectorAll('script, style, template, noscript').forEach((n) => n.remove())
+  return clone.textContent
+}
+
 function nameCandidates(el) {
-  return [el.textContent, el.getAttribute('aria-label'), el.value, el.getAttribute('alt')]
+  return [visibleText(el), el.getAttribute('aria-label'), el.value, el.getAttribute('alt')]
 }
 
 function findByRole(root, role, name) {
@@ -67,7 +74,7 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 function evaluate(check, root) {
   switch (check.type) {
     case 'text': {
-      const ok = normalizeText(root.textContent).includes(normalizeText(check.match))
+      const ok = normalizeText(visibleText(root)).includes(normalizeText(check.match))
       return ok ? { ok } : { ok, message: `No encontré el texto "${check.match}" en tu página.` }
     }
     case 'role': {
@@ -108,6 +115,9 @@ async function runInteraction(check, root) {
     if (step.action === 'click') {
       el.click()
     } else if (step.action === 'type') {
+      if (!['INPUT', 'TEXTAREA'].includes(el.tagName)) {
+        return { ok: false, message: 'Solo puedo escribir en un campo de texto, y ese elemento no lo es.' }
+      }
       const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype
       Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, step.value)
       el.dispatchEvent(new Event('input', { bubbles: true }))

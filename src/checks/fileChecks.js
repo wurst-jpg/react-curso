@@ -33,7 +33,7 @@ function runOne(check, index, files, { lint, manualDone }) {
         : { ...base, status: 'fail', message: `Tienes ${n} archivo(s) de código y se piden al menos ${check.min}.` }
     }
     case 'lint-clean': {
-      const bad = paths.filter((p) => lint(files[p]).some((d) => d.severity === 2))
+      const bad = paths.filter(isCode).filter((p) => lint(files[p]).some((d) => d.severity === 2))
       return bad.length === 0
         ? { ...base, status: 'pass' }
         : { ...base, status: 'fail', message: `Hay errores en tu código (${bad.join(', ')}). Revisa los avisos del editor.` }
