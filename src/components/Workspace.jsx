@@ -17,7 +17,7 @@ import HintBox from './HintBox.jsx'
 import Celebration from './Celebration.jsx'
 
 const SAVE_DELAY_MS = 500
-const SLOW_PREVIEW_MS = 15000
+const SLOW_PREVIEW_MS = 30000
 
 const button =
   'rounded-lg px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 disabled:cursor-not-allowed disabled:opacity-60'
@@ -71,6 +71,7 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
 
   const [results, setResults] = useState(null)
   const [checking, setChecking] = useState(false)
+  const [checkError, setCheckError] = useState(null)
   const [manualDone, setManualDone] = useState({})
   const [celebration, setCelebration] = useState(null)
   const [confirming, setConfirming] = useState(null)
@@ -78,23 +79,38 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   const [slow, setSlow] = useState(false)
 
   // Guardado con espera: se guarda ~500 ms después de dejar de escribir.
+  // Solo si el alumno cambió algo: abrir un reto no guarda sus archivos de inicio
+  // (si no, en retos `startFrom: 'previous'` se congelaría el código del reto anterior).
+  const [initialJson] = useState(() => JSON.stringify(files))
   const pendingRef = useRef(null)
   const discardRef = useRef(false)
   useEffect(() => {
+    if (JSON.stringify(files) === initialJson) {
+      pendingRef.current = null
+      return undefined
+    }
+    pendingRef.current = files
     const timer = setTimeout(() => {
       saveCode(challenge.id, files)
       pendingRef.current = null
     }, SAVE_DELAY_MS)
-    pendingRef.current = files
     return () => clearTimeout(timer)
-  }, [challenge.id, files])
-  // Si el alumno se va antes de la espera, se guarda igual (salvo al reiniciar).
-  useEffect(
-    () => () => {
-      if (pendingRef.current && !discardRef.current) saveCode(challenge.id, pendingRef.current)
-    },
-    [challenge.id],
-  )
+  }, [challenge.id, files, initialJson])
+  // Si el alumno sale del reto o cierra la pestaña antes de la espera, se guarda
+  // ya lo pendiente (salvo al reiniciar o ver la solución).
+  useEffect(() => {
+    const flush = () => {
+      if (pendingRef.current && !discardRef.current) {
+        saveCode(challenge.id, pendingRef.current)
+        pendingRef.current = null
+      }
+    }
+    window.addEventListener('pagehide', flush)
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      flush()
+    }
+  }, [challenge.id])
 
   useEffect(() => {
     if (!listen) return undefined
@@ -130,13 +146,20 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   async function check() {
     setChecking(true)
     setCelebration(null)
-    const all = await runAllChecks(challenge.checks, files, run, manualDone)
-    setResults(all)
-    setChecking(false)
-    if (summarizeResults(all).passed) {
-      const gained = completeChallenge(progress, challenge).xp - progress.xp
-      complete(challenge)
-      setCelebration({ xp: gained })
+    setCheckError(null)
+    try {
+      const all = await runAllChecks(challenge.checks, files, run, manualDone)
+      setResults(all)
+      if (summarizeResults(all).passed) {
+        const gained = completeChallenge(progress, challenge).xp - progress.xp
+        complete(challenge)
+        setCelebration({ xp: gained })
+      }
+    } catch {
+      setResults(null)
+      setCheckError('Algo salió mal al comprobar tu reto. Espera un momento y pulsa "Comprobar" otra vez.')
+    } finally {
+      setChecking(false)
     }
   }
 
@@ -259,6 +282,11 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
               </Link>
             )}
           </Celebration>
+        )}
+        {checkError && (
+          <p role="alert" className="rounded-lg border border-orange-500/60 bg-orange-950/50 p-3 text-orange-100">
+            {checkError}
+          </p>
         )}
         <CheckPanel
           checks={challenge.checks}

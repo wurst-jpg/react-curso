@@ -220,3 +220,35 @@ test('guarda el código del alumno ~500 ms después de dejar de escribir', async
     vi.useRealTimers()
   }
 })
+
+test('abrir un reto sin escribir no guarda nada', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+  try {
+    renderAt('/reto/m00-l1-c1')
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(localStorage.getItem(codeKey('m00-l1-c1'))).toBeNull()
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+test('al cerrar la página (pagehide) se guarda lo pendiente sin esperar', async () => {
+  const user = userEvent.setup()
+  renderAt('/reto/m00-l1-c1')
+  const editor = screen.getByLabelText('Editor de código')
+  await user.clear(editor)
+  await user.type(editor, 'x')
+  window.dispatchEvent(new Event('pagehide'))
+  const saved = JSON.parse(localStorage.getItem(codeKey('m00-l1-c1')))
+  expect(saved['/src/App.jsx']).toBe('x')
+})
+
+test('si la comprobación falla por un error inesperado, avisa y el botón vuelve a estar disponible', async () => {
+  const user = userEvent.setup()
+  runMock.mockRejectedValue(new Error('boom'))
+  renderAt('/reto/m00-l1-c1')
+  await user.click(screen.getByRole('button', { name: 'Comprobar' }))
+  expect(await screen.findByText(/algo salió mal al comprobar/i)).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Comprobar' })).toBeEnabled()
+  expect(screen.queryByText('¡Reto superado!')).not.toBeInTheDocument()
+})
