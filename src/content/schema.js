@@ -60,5 +60,8 @@ function validateChallenge(ch, isFirst, errors) {
       errors.push(`El check ${i + 1} del reto '${ch.id}' tiene un tipo desconocido: '${check.type}'.`)
     }
     if (!check.label) errors.push(`El check ${i + 1} del reto '${ch.id}' no tiene label.`)
+    if ('message' in check && (typeof check.message !== 'string' || !check.message.trim())) {
+      errors.push(`El check ${i + 1} del reto '${ch.id}' tiene un message que no es un texto.`)
+    }
   })
 }

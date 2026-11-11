@@ -20,6 +20,24 @@ describe('runFileChecks', () => {
     expect(res.map((r) => r.status)).toEqual(['fail', 'pass'])
     expect(res[0].message).toBeTruthy()
   })
+  it('usa el message del check al fallar (file-exists y file-includes)', () => {
+    const res = runFileChecks(
+      [
+        { type: 'file-exists', label: 'a', pattern: 'Nada\\.jsx$', message: 'Falta crear Nada.jsx.' },
+        { type: 'file-includes', label: 'b', path: '/src/App.jsx', pattern: 'zzz', message: 'Falta zzz.' },
+        { type: 'file-includes', label: 'c', path: '/no/existe.js', pattern: 'x', message: 'Falta el archivo.' },
+        { type: 'file-includes', label: 'd', pattern: 'zzz', message: 'Falta zzz en alguna parte.' },
+      ],
+      files,
+      { lint },
+    )
+    expect(res.map((r) => r.message)).toEqual([
+      'Falta crear Nada.jsx.',
+      'Falta zzz.',
+      'Falta el archivo.',
+      'Falta zzz en alguna parte.',
+    ])
+  })
   it('file-includes con y sin path', () => {
     const res = runFileChecks(
       [

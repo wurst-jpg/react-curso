@@ -1,4 +1,5 @@
 import course, { flattenChallenges, findChallenge } from '../../src/content/course.js'
+import { lintSource } from '../../src/lint/lintSource.js'
 import { validateCourse } from '../../src/content/schema.js'
 
 describe('curso', () => {
@@ -24,6 +25,14 @@ describe('curso', () => {
     flattenChallenges(course).forEach(({ challenge }) => {
       const files = { ...challenge.files, ...challenge.solution }
       challenge.checks.forEach((check) => {
+        if (check.type === 'lint-clean') {
+          Object.entries(files)
+            .filter(([p]) => /\.jsx?$/.test(p))
+            .forEach(([p, code]) => {
+              const errores = lintSource(code).filter((d) => d.severity === 2)
+              expect(errores, `${challenge.id} ${p}`).toEqual([])
+            })
+        }
         if (check.type === 'file-exists') {
           const re = new RegExp(check.pattern)
           expect(Object.keys(files).some((p) => re.test(p)), challenge.id).toBe(true)

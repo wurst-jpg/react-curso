@@ -5,26 +5,27 @@ const isCode = (path) => /\.jsx?$/.test(path)
 function runOne(check, index, files, { lint, manualDone }) {
   const base = { index, label: check.label }
   const paths = Object.keys(files)
+  const failMessage = (fallback) => (check.message ? check.message : fallback)
   switch (check.type) {
     case 'file-exists': {
       const re = new RegExp(check.pattern)
       return paths.some((p) => re.test(p))
         ? { ...base, status: 'pass' }
-        : { ...base, status: 'fail', message: 'Todavía no existe el archivo que se pide. Créalo desde el panel de archivos.' }
+        : { ...base, status: 'fail', message: failMessage('Todavía no existe el archivo que se pide. Créalo desde el panel de archivos.') }
     }
     case 'file-includes': {
       const re = new RegExp(check.pattern)
       if (check.path) {
         if (typeof files[check.path] !== 'string') {
-          return { ...base, status: 'fail', message: `No encontré el archivo ${check.path}.` }
+          return { ...base, status: 'fail', message: failMessage(`No encontré el archivo ${check.path}.`) }
         }
         return re.test(files[check.path])
           ? { ...base, status: 'pass' }
-          : { ...base, status: 'fail', message: `Todavía falta algo en ${check.path}.` }
+          : { ...base, status: 'fail', message: failMessage(`Todavía falta algo en ${check.path}.`) }
       }
       return paths.some((p) => re.test(files[p]))
         ? { ...base, status: 'pass' }
-        : { ...base, status: 'fail', message: 'Todavía falta algo en tu código.' }
+        : { ...base, status: 'fail', message: failMessage('Todavía falta algo en tu código.') }
     }
     case 'file-count': {
       const n = paths.filter(isCode).length

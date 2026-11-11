@@ -19,11 +19,18 @@ const modulo = {
       title: 'Las partes de un proyecto',
       explanation: `Un proyecto de React es como una casa pequeña, y cada archivo tiene su trabajo:
 
-- \`index.html\` es el terreno: una página casi vacía con un hueco (un \`div\` llamado "root") donde se construirá todo.
+- \`index.html\` es el terreno: una página casi vacía con un hueco (un \`div\` llamado "root") donde se construirá todo (no lo verás en las pestañas: la plataforma lo maneja por ti).
 - \`main.jsx\` es el constructor: toma tu aplicación y la coloca en ese hueco.
 - \`App.jsx\` es la casa en sí: lo que de verdad ves en pantalla.
 
-Casi siempre trabajarás en \`App.jsx\`. Los otros dos se quedan quietos.`,
+Casi siempre trabajarás en \`App.jsx\`. Los otros dos se quedan quietos.
+
+Cómo usar el editor:
+
+- Escribe tu código en el editor, y la vista previa se actualiza sola.
+- **Comprobar** revisa si tu reto está bien hecho.
+- **Pista** te da una ayuda poco a poco; **Nuevo archivo** (junto a las pestañas) crea un archivo.
+- **Ver solución** te muestra la respuesta, pero da solo la mitad de XP.`,
       challenges: [
         {
           id: 'm00-l1-c1',
@@ -97,11 +104,17 @@ export default function App() {
 `,
           },
           checks: [
-            { type: 'file-exists', pattern: '^/src/Saludo\\.jsx$', label: 'Existe el archivo Saludo.jsx' },
+            {
+              type: 'file-exists',
+              pattern: '^/src/Saludo\\.jsx$',
+              label: 'Existe el archivo Saludo.jsx',
+              message: 'Falta crear el archivo /src/Saludo.jsx.',
+            },
             {
               type: 'file-includes',
               path: '/src/App.jsx',
-              pattern: 'import\\s+\\w+\\s+from\\s+[\'"]\\./Saludo(\\.jsx)?[\'"]',
+              pattern: 'import\\s+.+?\\s+from\\s+[\'"]\\./Saludo(\\.jsx)?[\'"]',
+              message: "Falta la línea import Saludo from './Saludo.jsx' en App.jsx.",
               label: 'App.jsx importa Saludo',
             },
             {
@@ -123,7 +136,9 @@ export default function App() {
 - Un subrayado **rojo** es un error: algo está mal y conviene arreglarlo.
 - Un subrayado **amarillo** es un aviso: probablemente sobra o conviene revisar algo.
 
-Pasa el ratón sobre el subrayado para leer el motivo. Dos clásicos: una variable que creaste y nunca usas, y una variable que usas sin haberla creado.`,
+Pasa el ratón sobre el subrayado para leer el motivo. Dos clásicos: una variable que creaste y nunca usas, y una variable que usas sin haberla creado.
+
+Mientras el código tenga un error, la vista previa mostrará un mensaje en rojo (en inglés). Es normal: desaparece cuando lo arreglas.`,
       challenges: [
         {
           id: 'm00-l3-c1',

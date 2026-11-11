@@ -65,6 +65,13 @@ describe('validateCourse', () => {
     ).toBeGreaterThan(0)
   })
 
+  it('acepta message de texto y rechaza uno vacío o no textual', () => {
+    const conMsg = (message) => curso({ checks: [{ type: 'file-exists', pattern: 'x', label: 'a', message }] })
+    expect(validateCourse(conMsg('Falta algo.'))).toEqual([])
+    expect(validateCourse(conMsg(''))).not.toEqual([])
+    expect(validateCourse(conMsg(5))).not.toEqual([])
+  })
+
   it('rechaza startFrom previous en el primer reto del curso', () => {
     expect(validateCourse(curso({ startFrom: 'previous' })).length).toBeGreaterThan(0)
   })
