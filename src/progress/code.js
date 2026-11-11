@@ -38,15 +38,26 @@ export function clearAllCode() {
 }
 
 function locate(modules, id) {
-  const flat = flattenChallenges(modules)
-  const i = flat.findIndex((e) => e.challenge.id === id)
+  const flat = flattenChallenges(modules).map((e) => e.challenge)
+  const i = flat.findIndex((c) => c.id === id)
   if (i === -1) return null
-  return { challenge: flat[i].challenge, prev: i > 0 ? flat[i - 1].challenge : null }
+  return { flat, i }
 }
 
-// Versión limpia del reto anterior: sus archivos con su solución aplicada.
-function cleanPrevious(prev) {
-  return { ...prev.files, ...prev.solution }
+// Versión limpia de un reto ya resuelto: su punto de partida con su solución aplicada.
+// Recursivo para cadenas de `startFrom: 'previous'`; `useSaved` permite usar el código guardado.
+function carry(flat, i, useSaved) {
+  const ch = flat[i]
+  if (useSaved) {
+    const saved = loadCode(ch.id)
+    if (saved) return saved
+  }
+  return { ...startOf(flat, i, useSaved), ...ch.solution }
+}
+
+function startOf(flat, i, useSaved) {
+  const ch = flat[i]
+  return ch.startFrom === 'previous' && i > 0 ? carry(flat, i - 1, useSaved) : ch.files
 }
 
 export function initialFiles(modules, id) {
@@ -54,19 +65,13 @@ export function initialFiles(modules, id) {
   if (saved) return saved
   const found = locate(modules, id)
   if (!found) return {}
-  const { challenge, prev } = found
-  if (challenge.startFrom === 'previous' && prev) {
-    return loadCode(prev.id) ?? cleanPrevious(prev)
-  }
-  return challenge.files
+  return startOf(found.flat, found.i, true)
 }
 
 export function cleanStartFiles(modules, id) {
   const found = locate(modules, id)
   if (!found) return {}
-  const { challenge, prev } = found
-  if (challenge.startFrom === 'previous' && prev) return cleanPrevious(prev)
-  return challenge.files
+  return startOf(found.flat, found.i, false)
 }
 
 export function solutionFiles(challenge, currentFiles) {

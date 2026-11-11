@@ -62,6 +62,40 @@ describe('storage de código', () => {
   })
 })
 
+const chain = [
+  {
+    id: 'm',
+    title: 'M',
+    lessons: [
+      {
+        id: 'l',
+        title: 'L',
+        challenges: [
+          { id: 'c1', files: { '/src/main.jsx': 'm', '/src/App.jsx': 'a1' }, solution: { '/src/App.jsx': 'a1-sol' } },
+          { id: 'c2', startFrom: 'previous', solution: { '/src/B.jsx': 'b2' } },
+          { id: 'c3', startFrom: 'previous', solution: { '/src/C.jsx': 'c3' } },
+          { id: 'c4', startFrom: 'previous', solution: { '/src/D.jsx': 'd4' } },
+        ],
+      },
+    ],
+  },
+]
+
+describe('cadenas de startFrom previous', () => {
+  const all = { '/src/main.jsx': 'm', '/src/App.jsx': 'a1-sol', '/src/B.jsx': 'b2', '/src/C.jsx': 'c3' }
+  it('initialFiles de c4 arrastra todo lo anterior', () => {
+    expect(initialFiles(chain, 'c4')).toEqual(all)
+  })
+  it('cleanStartFiles de c4 arrastra todo e ignora guardados', () => {
+    saveCode('c3', { '/src/main.jsx': 'mío' })
+    expect(cleanStartFiles(chain, 'c4')).toEqual(all)
+  })
+  it('initialFiles usa el guardado más cercano', () => {
+    saveCode('c2', { '/src/main.jsx': 'm', '/src/Z.jsx': 'z' })
+    expect(initialFiles(chain, 'c4')).toEqual({ '/src/main.jsx': 'm', '/src/Z.jsx': 'z', '/src/C.jsx': 'c3' })
+  })
+})
+
 describe('initialFiles', () => {
   it('reto normal sin guardado → files', () => {
     expect(initialFiles(modules, 'c2')).toEqual({ '/a.js': 'a2' })
