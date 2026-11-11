@@ -7,9 +7,10 @@ import { PROGRESS_KEY } from '../../src/progress/progress.js'
 import { codeKey } from '../../src/progress/code.js'
 
 const runMock = vi.fn()
+let previewReady = true
 
 vi.mock('../../src/sandbox/useCheckRunner.js', () => ({
-  useCheckRunner: () => ({ run: runMock, ready: true }),
+  useCheckRunner: () => ({ run: runMock, ready: previewReady }),
 }))
 
 // Sandpack falso: guarda los archivos en estado y ofrece la misma API que usa la página.
@@ -79,6 +80,7 @@ const storedProgress = () => JSON.parse(localStorage.getItem(PROGRESS_KEY))
 beforeEach(() => {
   localStorage.clear()
   runMock.mockReset()
+  previewReady = true
 })
 
 test('muestra el título y las instrucciones de m00-l1-c1', () => {
@@ -120,6 +122,20 @@ test('"Comprobar" con un fail muestra el mensaje y no suma XP', async () => {
   await user.click(screen.getByRole('button', { name: 'Comprobar' }))
   expect(await screen.findByText('No encontré ese texto.')).toBeInTheDocument()
   expect(screen.queryByText('¡Reto superado!')).not.toBeInTheDocument()
+  expect(storedProgress()?.xp ?? 0).toBe(0)
+})
+
+test('"Comprobar" con la vista previa sin cargar avisa y no culpa al código', async () => {
+  const user = userEvent.setup()
+  previewReady = false
+  renderAt('/reto/m00-l1-c1')
+  await user.click(screen.getByRole('button', { name: 'Comprobar' }))
+  expect(
+    await screen.findByText(
+      'La vista previa todavía se está preparando. Espera a que aparezca tu página y pulsa "Comprobar" otra vez.',
+    ),
+  ).toBeInTheDocument()
+  expect(runMock).not.toHaveBeenCalled()
   expect(storedProgress()?.xp ?? 0).toBe(0)
 })
 

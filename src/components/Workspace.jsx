@@ -18,6 +18,8 @@ import Celebration from './Celebration.jsx'
 
 const SAVE_DELAY_MS = 500
 const SLOW_PREVIEW_MS = 30000
+const PREVIEW_PREPARING_MESSAGE =
+  'La vista previa todavía se está preparando. Espera a que aparezca tu página y pulsa "Comprobar" otra vez.'
 
 const button =
   'rounded-lg px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 disabled:cursor-not-allowed disabled:opacity-60'
@@ -77,6 +79,7 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   const [confirming, setConfirming] = useState(null)
   const [bundled, setBundled] = useState(false)
   const [slow, setSlow] = useState(false)
+  const previewLoaded = ready || bundled
 
   // Guardado con espera: se guarda ~500 ms después de dejar de escribir.
   // Solo si el alumno cambió algo: abrir un reto no guarda sus archivos de inicio
@@ -144,9 +147,15 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   }
 
   async function check() {
-    setChecking(true)
     setCelebration(null)
     setCheckError(null)
+    // Con la vista previa aún cargando, no se culpa al código del alumno.
+    if (!previewLoaded && challenge.checks.some((c) => IFRAME_CHECK_TYPES.includes(c.type))) {
+      setResults(null)
+      setCheckError(PREVIEW_PREPARING_MESSAGE)
+      return
+    }
+    setChecking(true)
     try {
       const all = await runAllChecks(challenge.checks, files, run, manualDone)
       setResults(all)
@@ -174,7 +183,6 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
     sandpack.deleteFile(path)
   }
 
-  const previewLoaded = ready || bundled
   const showSlowWarning = slow && !previewLoaded
 
   return (
