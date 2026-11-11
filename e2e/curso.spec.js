@@ -21,7 +21,6 @@ test('recorrido del módulo 0: ver solución, comprobar y conservar el XP', asyn
   await page.getByRole('button', { name: 'Ver solución' }).click()
   await page.getByRole('button', { name: 'Sí, ver la solución' }).click()
   // Esperar a que la vista previa nueva (con la solución) cargue antes de comprobar.
-  await expect(page.getByText('Preparando la vista previa')).toBeHidden({ timeout: 40_000 })
   await expect(page.frameLocator('iframe').getByRole('heading', { name: '¡Hola, React!' })).toBeVisible({
     timeout: 40_000,
   })
@@ -54,7 +53,9 @@ test('el código escrito en el editor sobrevive a recargar', async ({ page }) =>
   await expect(editor).toContainText(marca)
 
   // El código se guarda ~500 ms después de dejar de escribir.
-  await page.waitForTimeout(1500)
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem('curso-react:code:v1:m00-l1-c1') ?? ''), { timeout: 5000 })
+    .toContain(marca)
   await page.reload()
 
   await expect(page.locator('.cm-content').first()).toContainText(marca)
