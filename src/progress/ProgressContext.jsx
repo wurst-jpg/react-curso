@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { clearAllCode } from './code.js'
 import {
   completeChallenge,
+  emptyProgress,
   loadProgress,
   markHintUsed,
   markSolutionViewed,
@@ -21,9 +23,15 @@ export function ProgressProvider({ children }) {
   const viewSolution = useCallback((id) => setProgress((p) => markSolutionViewed(p, id)), [])
   const recordHint = useCallback((id) => setProgress((p) => markHintUsed(p, id)), [])
 
+  // Borra el avance y también el código guardado de todos los retos.
+  const resetAll = useCallback(() => {
+    clearAllCode()
+    setProgress(emptyProgress())
+  }, [])
+
   const value = useMemo(
-    () => ({ progress, complete, viewSolution, recordHint }),
-    [progress, complete, viewSolution, recordHint],
+    () => ({ progress, complete, viewSolution, recordHint, resetAll }),
+    [progress, complete, viewSolution, recordHint, resetAll],
   )
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>
 }

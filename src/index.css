@@ -13,3 +13,44 @@
 .preview-surface .sp-loading {
   display: none;
 }
+
+/* Celebración al superar un reto. Sin movimiento si el sistema pide menos animaciones. */
+@media (prefers-reduced-motion: no-preference) {
+  .celebration {
+    animation: celebration-pop 400ms ease-out;
+  }
+  .celebration-xp {
+    animation: celebration-pop 600ms 200ms ease-out both;
+  }
+  .celebration-confetti {
+    animation: celebration-fall 1400ms ease-in both;
+  }
+}
+
+@keyframes celebration-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes celebration-fall {
+  from {
+    opacity: 1;
+    transform: translateY(-1.5rem);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-confetti {
+    display: none;
+  }
+}

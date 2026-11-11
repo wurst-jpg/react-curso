@@ -1,23 +1,22 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { ProgressProvider } from './progress/ProgressContext.jsx'
+import XpBar from './components/XpBar.jsx'
+import CourseMap from './pages/CourseMap.jsx'
+import ModulePage from './pages/ModulePage.jsx'
 import ChallengePage from './pages/ChallengePage.jsx'
-
-function Inicio() {
-  return (
-    <main className="min-h-screen bg-slate-900 p-8 text-slate-100">
-      <h1 className="text-3xl font-bold">Curso de React</h1>
-    </main>
-  )
-}
 
 export default function App() {
   return (
     <ProgressProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Inicio />} />
-          <Route path="/reto/:challengeId" element={<ChallengePage />} />
-        </Routes>
+        <div className="min-h-screen bg-slate-900">
+          <XpBar />
+          <Routes>
+            <Route path="/" element={<CourseMap />} />
+            <Route path="/modulo/:moduleId" element={<ModulePage />} />
+            <Route path="/reto/:challengeId" element={<ChallengePage />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </ProgressProvider>
   )

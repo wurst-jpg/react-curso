@@ -22,6 +22,21 @@ export function clearCode(id) {
   }
 }
 
+// Borra todo el código guardado de todos los retos (claves con el prefijo del curso).
+export function clearAllCode() {
+  try {
+    const prefix = codeKey('')
+    const keys = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith(prefix)) keys.push(k)
+    }
+    keys.forEach((k) => localStorage.removeItem(k))
+  } catch {
+    // sin acceso al almacenamiento: no hay nada que borrar
+  }
+}
+
 function locate(modules, id) {
   const flat = flattenChallenges(modules)
   const i = flat.findIndex((e) => e.challenge.id === id)
