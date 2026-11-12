@@ -125,3 +125,43 @@ test('autocompletar: sugiere useState y clases de Tailwind, Tab elige y el inter
   await page.reload()
   await expect(page.getByRole('button', { name: /autocompletar/i })).toHaveAttribute('aria-pressed', 'false')
 })
+
+test('aviso de ESLint legible: texto claro sobre fondo oscuro', async ({ page }) => {
+  // El reto 3.1 se abre al superar el anterior: se deja ese progreso preparado.
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'curso-react:progress:v1',
+      JSON.stringify({ completed: { 'm00-l1-c1': {}, 'm00-l2-c1': {} }, xp: 20, solutionViewed: {}, hintsUsed: {} }),
+    ),
+  )
+  await page.goto('/reto/m00-l3-c1')
+  const editor = page.locator('.cm-content').first()
+  await expect(editor).toBeVisible()
+  await expect(page.locator('.cm-lintRange-error').first()).toBeVisible({ timeout: 15_000 })
+
+  await page.locator('.cm-lintRange-error').first().hover()
+  const aviso = page.locator('.cm-tooltip:has(.cm-tooltip-lint)')
+  await expect(aviso).toBeVisible()
+  const luz = (rgb) => {
+    const [r, g, b] = rgb.match(/\d+(\.\d+)?/g).slice(0, 3).map((v) => {
+      const c = Number(v) / 255
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+    })
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+  const fondo = await aviso.evaluate((el) => getComputedStyle(el).backgroundColor)
+  const texto = await aviso.locator('.cm-diagnostic').first().evaluate((el) => getComputedStyle(el).color)
+  const [a, b] = [luz(fondo), luz(texto)].sort((x, y) => y - x)
+  expect(luz(fondo)).toBeLessThan(0.1)
+  expect((a + 0.05) / (b + 0.05)).toBeGreaterThanOrEqual(4.5)
+  await page.screenshot({ path: '/tmp/claude-1000/-home-wurst/1a288985-084f-4f53-8450-a3c8be43257c/scratchpad/lint-tooltip.png' })
+
+  // Lo mismo al pasar el ratón por el marcador del margen.
+  await page.mouse.move(0, 0)
+  await expect(page.locator('.cm-tooltip-lint')).toHaveCount(0)
+  await page.locator('.cm-lint-marker').first().hover()
+  const marcador = page.locator('.cm-tooltip-lint').first()
+  await expect(marcador).toBeVisible()
+  expect(await marcador.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(fondo)
+  expect(await marcador.locator('.cm-diagnostic').first().evaluate((el) => getComputedStyle(el).color)).toBe(texto)
+})

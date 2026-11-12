@@ -1,7 +1,7 @@
 import { EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { forceLinting, forEachDiagnostic } from '@codemirror/lint'
-import { createLintExtension, toDiagnostics } from '../../src/lint/lintExtension.js'
+import { createLintExtension, lintTheme, toDiagnostics } from '../../src/lint/lintExtension.js'
 
 describe('lintExtension', () => {
   it('createLintExtension devuelve un arreglo de extensiones', () => {
@@ -38,6 +38,19 @@ describe('lintExtension', () => {
     const found = []
     forEachDiagnostic(view.state, (d) => found.push(d))
     expect(found.some((d) => d.severity === 'error')).toBe(true)
+    view.destroy()
+  })
+
+  it('incluye un tema oscuro para el aviso (texto claro sobre fondo oscuro)', () => {
+    expect(createLintExtension()).toContain(lintTheme)
+    const view = new EditorView({
+      state: EditorState.create({ doc: 'a', extensions: createLintExtension() }),
+      parent: document.body,
+    })
+    expect(view.dom.className).toMatch(/ͼ/)
+    const css = [...document.querySelectorAll('style')].map((s) => s.textContent).join('\n')
+    expect(css).toMatch(/\.cm-tooltip\.cm-tooltip-lint/)
+    expect(css).toContain('#0f172a')
     view.destroy()
   })
 })
