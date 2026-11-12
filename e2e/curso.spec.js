@@ -90,6 +90,19 @@ test('autocompletar: sugiere useState y clases de Tailwind, Tab elige y el inter
   await page.keyboard.press('ControlOrMeta+a')
   await page.keyboard.type('const x = <div className="bg-bl')
   await expect(lista).toContainText('bg-blue-500')
+  // La lista es oscura (a juego con el editor) y la opción elegida va en azul cielo.
+  expect(await lista.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(15, 23, 42)')
+  expect(await lista.locator('li[aria-selected]').evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(2, 132, 199)')
+
+  // En texto suelto de JSX no se sugiere nada.
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('<p>Hola useS')
+  await page.waitForTimeout(600)
+  await expect(lista).toHaveCount(0)
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('const x = <div className="bg-bl')
+  await expect(lista).toContainText('bg-blue-500')
 
   // El interruptor: sin recargar la vista previa ni perder el código.
   await page.keyboard.press('Escape')

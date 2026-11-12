@@ -47,3 +47,35 @@ describe('reactSource', () => {
     expect(await complete(off, 'useS|')).toBeNull()
   })
 })
+
+describe('reactSource: no molesta en textos, comentarios ni JSX de texto', () => {
+  const cases = {
+    'una cadena': 'const a = "Hola useS|"',
+    'una cadena con comillas simples': "const a = 'useS|'",
+    'una plantilla de texto': 'const a = `useS|`',
+    'un comentario de línea': '// useS|',
+    'un comentario de bloque': '/* useS|',
+    'texto dentro de JSX': '<p>Hola useS|</p>',
+  }
+  for (const [name, doc] of Object.entries(cases)) {
+    it(`no sugiere dentro de ${name}`, async () => {
+      expect(await complete(reactSource, doc)).toBeNull()
+    })
+  }
+  it('sí sugiere dentro de ${...} de una plantilla y en llaves de JSX', async () => {
+    expect(labels(await complete(reactSource, 'const a = `x ${useS|}`'))).toContain('useState')
+    expect(labels(await complete(reactSource, '<p>{useS|}</p>'))).toContain('useState')
+  })
+})
+
+describe('reactSource: palabras de JavaScript', () => {
+  it('ofrece las palabras básicas con descripción en español', async () => {
+    const result = await complete(reactSource, '|', true)
+    for (const w of ['const', 'let', 'function', 'if', 'else', 'true', 'false', 'null', 'async', 'await', 'for', 'while', 'try', 'catch', 'new']) {
+      const o = result.options.find((x) => x.label === w)
+      expect(o, w).toBeTruthy()
+      expect(o.detail).toBeTruthy()
+    }
+    expect(labels(await complete(reactSource, 'con|'))).toContain('const')
+  })
+})

@@ -44,3 +44,24 @@ describe('createProjectSource', () => {
     expect(await complete(createProjectSource(() => ({ '/a': 5 })), 'Salu|')).toBeNull()
   })
 })
+
+describe('createProjectSource: textos, comentarios y duplicados', () => {
+  const source = createProjectSource(() => files)
+  it('no sugiere dentro de cadenas, comentarios ni texto de JSX', async () => {
+    expect(await complete(source, 'const a = "Hola Salu|"')).toBeNull()
+    expect(await complete(source, '// Salu|')).toBeNull()
+    expect(await complete(source, '/* Salu|')).toBeNull()
+    expect(await complete(source, '<p>Hola mundo Salu|</p>')).toBeNull()
+  })
+  it('sí sugiere dentro de llaves de JSX', async () => {
+    expect(labels(await complete(source, '<p>{Salu|}</p>'))).toContain('Saludo')
+  })
+  it('no repite palabras que ya ofrece la fuente de React', async () => {
+    const src = createProjectSource(() => ({ '/a.jsx': 'const [a, setA] = useState(0); useEffect(); const onClick = 1; className' }))
+    const result = await complete(src, 'use|', true)
+    expect(labels(result)).not.toContain('useState')
+    expect(labels(result)).not.toContain('useEffect')
+    expect(labels(await complete(src, 'onC|'))).not.toContain('onClick')
+    expect(labels(await complete(src, 'set|'))).toContain('setA')
+  })
+})

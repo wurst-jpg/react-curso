@@ -1,4 +1,6 @@
 import { isInsideClassName } from './tailwindCompletions.js'
+import { isInsideTextOrComment } from './codeContext.js'
+import { reactLabels } from './reactCompletions.js'
 
 const MIN_LENGTH = 3
 // Palabras propias del lenguaje: ya las ofrecen otras fuentes o no aportan.
@@ -25,7 +27,7 @@ export function createProjectSource(getFiles, isEnabled = () => true) {
   const perFile = new Map() // ruta -> { code, words }: solo se vuelve a leer lo que cambió
   return (context) => {
     if (!isEnabled()) return null
-    if (isInsideClassName(context.state, context.pos)) return null
+    if (isInsideClassName(context.state, context.pos) || isInsideTextOrComment(context.state, context.pos)) return null
     const word = context.matchBefore(/[\w$]*/)
     if (!word || (word.from === word.to && !context.explicit)) return null
 
@@ -49,6 +51,7 @@ export function createProjectSource(getFiles, isEnabled = () => true) {
     }
     const typed = word.text
     all.delete(typed) // la palabra a medio escribir no se sugiere a sí misma
+    for (const label of reactLabels()) all.delete(label) // ya las ofrece la fuente de React
     if (all.size === 0) return null
     return {
       from: word.from,

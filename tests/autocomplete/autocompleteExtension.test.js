@@ -57,3 +57,15 @@ describe('createAutocompleteController', () => {
     expect(controller.extension).toBe(extension)
   })
 })
+
+describe('estilo de la lista', () => {
+  it('incluye un tema propio para .cm-tooltip-autocomplete', async () => {
+    const { autocompleteTheme } = await import('../../src/autocomplete/autocompleteExtension.js')
+    const css = JSON.stringify(autocompleteTheme)
+    expect(autocompleteTheme).toBeTruthy()
+    expect(Array.isArray(createAutocompleteExtension({ getFiles: () => files }))).toBe(true)
+    // El tema se crea con EditorView.theme: debe ser una extensión que acepta EditorState.create
+    expect(() => EditorState.create({ doc: '', extensions: [autocompleteTheme] })).not.toThrow()
+    expect(css).toBeTruthy()
+  })
+})
