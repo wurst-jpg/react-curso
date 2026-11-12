@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { parse } from 'acorn'
 import course, { flattenChallenges, findChallenge } from '../../src/content/course.js'
 import { lintSource } from '../../src/lint/lintSource.js'
 import { validateCourse } from '../../src/content/schema.js'
@@ -5,6 +7,39 @@ import { validateCourse } from '../../src/content/schema.js'
 describe('curso', () => {
   it('es válido', () => {
     expect(validateCourse(course)).toEqual([])
+  })
+
+  it('descubre los módulos en orden y el id de cada uno coincide con el prefijo de su archivo', () => {
+    const archivos = readdirSync('src/content/modules').filter((f) => f.endsWith('.js')).sort()
+    expect(course.length).toBe(archivos.length)
+    archivos.forEach((archivo, i) => {
+      const prefijo = archivo.match(/^(m\d{2})-[a-z0-9-]+\.js$/)
+      expect(prefijo, `${archivo}: el nombre debe ser mNN-slug.js`).not.toBeNull()
+      expect(course[i].id, `${archivo} debe declarar id "${prefijo?.[1]}"`).toBe(prefijo[1])
+    })
+    const ids = course.map((m) => m.id)
+    expect(ids).toEqual([...ids].sort())
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('los ids de lecciones y retos empiezan con el id de su módulo y son únicos', () => {
+    const vistos = new Set()
+    flattenChallenges(course).forEach(({ challenge, lesson, module }) => {
+      expect(lesson.id.startsWith(`${module.id}-l`), lesson.id).toBe(true)
+      expect(challenge.id.startsWith(`${lesson.id}-c`), challenge.id).toBe(true)
+      expect(vistos.has(challenge.id), `id repetido ${challenge.id}`).toBe(false)
+      vistos.add(challenge.id)
+    })
+  })
+
+  it('los archivos de módulo no tienen sentencias import (el cargador de e2e/soluciones.spec.js lo exige)', () => {
+    readdirSync('src/content/modules')
+      .filter((f) => f.endsWith('.js'))
+      .forEach((f) => {
+        const ast = parse(readFileSync(`src/content/modules/${f}`, 'utf8'), { ecmaVersion: 'latest', sourceType: 'module' })
+        const imports = ast.body.filter((n) => n.type === 'ImportDeclaration' || n.type === 'ExportAllDeclaration')
+        expect(imports, `${f} no debe importar nada: define las constantes dentro del archivo`).toEqual([])
+      })
   })
 
   it('flattenChallenges devuelve los retos en orden', () => {
