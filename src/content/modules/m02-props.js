@@ -84,6 +84,20 @@ export default function App() {
           checks: [
             { type: 'text', match: 'Hola, Ana', label: 'Se ve "Hola, Ana"' },
             { type: 'text', match: 'Hola, Luis', label: 'Se ve "Hola, Luis"', message: 'Pasa nombre="Luis" a la segunda etiqueta <Saludo />.' },
+            {
+              type: 'file-includes',
+              path: '/src/components/Saludo.jsx',
+              pattern: 'props\\.nombre|\\{\\s*nombre\\s*\\}',
+              label: 'Saludo usa la prop nombre',
+              message: 'En Saludo.jsx muestra {props.nombre} en lugar del texto fijo.',
+            },
+            {
+              type: 'file-includes',
+              path: '/src/App.jsx',
+              pattern: 'nombre\\s*=\\s*["\']Luis["\']',
+              label: 'App pasa nombre="Luis"',
+              message: 'En App.jsx escribe <Saludo nombre="Luis" /> en la segunda etiqueta.',
+            },
             { type: 'lint-clean', label: 'ESLint no encuentra errores' },
           ],
           xp: 10,
@@ -92,7 +106,7 @@ export default function App() {
           id: 'm02-l1-c2',
           title: 'Texto y números',
           instructions:
-            '`Producto` ya recibe `nombre` y `precio` (por ahora vacíos). En `App.jsx` pásale los datos para que se vean **Café: $30** y **Pan: $12**. Recuerda: textos con comillas, números con llaves.',
+            '`Producto` ya recibe `nombre` y `precio` (por ahora vacíos). En `App.jsx` pásale los datos para que se vean **Café: $30** y **Pan: $12**. Recuerda: textos con comillas, números con llaves. (Dentro de `Producto`, el `$` es solo un texto normal que va pegado delante de las llaves `{props.precio}`: no hay que tocarlo.)',
           files: {
             '/src/main.jsx': MAIN,
             '/src/components/Producto.jsx': `export default function Producto(props) {
@@ -136,7 +150,7 @@ export default function App() {
             {
               type: 'file-includes',
               path: '/src/App.jsx',
-              pattern: 'precio=\\{\\s*30\\s*\\}',
+              pattern: 'precio\\s*=\\s*\\{\\s*30\\s*\\}',
               label: 'El precio se pasa con llaves: precio={30}',
               message: 'Los números van entre llaves: precio={30}.',
             },
@@ -212,7 +226,7 @@ export default function App() {
           id: 'm02-l2-c2',
           title: 'Un perfil desde cero',
           instructions:
-            'Crea el archivo `/src/components/Perfil.jsx` con un componente que reciba `{ nombre, ciudad }` y muestre un título `h2` con el nombre y un párrafo **Vive en** y la ciudad. En `App.jsx` (que ya lo importa) se usa dos veces: debe verse **Ana**, **Vive en Lima**, **Luis** y **Vive en Quito**.',
+            'Crea el archivo `/src/components/Perfil.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Perfil.jsx`) con un componente que reciba `{ nombre, ciudad }` y muestre un título `h2` con el nombre y un párrafo **Vive en** y la ciudad. En `App.jsx` (que ya lo importa) se usa dos veces: debe verse **Ana**, **Vive en Lima**, **Luis** y **Vive en Quito**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import Perfil from './components/Perfil.jsx'
@@ -229,7 +243,7 @@ export default function App() {
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea /src/components/Perfil.jsx con Nuevo archivo. Debe tener export default.',
+            'Pulsa Nuevo archivo y en Nombre del archivo escribe components/Perfil.jsx. Debe tener export default.',
             'export default function Perfil({ nombre, ciudad }) { return (...) } con un h2 y un p.',
             'Devuelve <> <h2>{nombre}</h2> <p>Vive en {ciudad}</p> </> dentro de return ( ).',
           ],
@@ -319,7 +333,7 @@ export default function App() {
             {
               type: 'file-includes',
               path: '/src/components/Caja.jsx',
-              pattern: '\\{\\s*children\\s*\\}',
+              pattern: '\\{\\s*(props\\.)?children\\s*\\}',
               label: 'Caja usa {children}',
               message: 'Escribe {children} dentro del div de Caja.',
             },
@@ -331,7 +345,7 @@ export default function App() {
           id: 'm02-l3-c2',
           title: 'Tarjeta con título y contenido',
           instructions:
-            '`App.jsx` ya usa un componente `Tarjeta` con un título y contenido, pero falta crearlo. Crea `/src/components/Tarjeta.jsx`: debe mostrar el `titulo` en un `h2` y debajo sus `children`. Deben verse **Receta de panqueques** y **Mezclar harina con leche**.',
+            '`App.jsx` ya usa un componente `Tarjeta` con un título y contenido, pero falta crearlo. Crea `/src/components/Tarjeta.jsx` (en **Nombre del archivo** escribe `components/Tarjeta.jsx`): debe mostrar el `titulo` en un `h2` y debajo sus `children`. Deben verse **Receta de panqueques** y **Mezclar harina con leche**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import Tarjeta from './components/Tarjeta.jsx'
@@ -347,7 +361,7 @@ export default function App() {
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea /src/components/Tarjeta.jsx con export default. Recibe dos cosas: titulo y children.',
+            'Pulsa Nuevo archivo y escribe components/Tarjeta.jsx como nombre. Usa export default. Recibe dos cosas: titulo y children.',
             'function Tarjeta({ titulo, children }) y devuelve un contenedor con <h2>{titulo}</h2> y {children}.',
             'return ( <div> <h2>{titulo}</h2> {children} </div> )',
           ],
@@ -439,6 +453,13 @@ export default function App() {
               message: "Dale a texto un valor por defecto: { texto = 'Aceptar' }.",
             },
             { type: 'role', role: 'button', name: 'Cancelar', label: 'Se ve el botón "Cancelar"' },
+            {
+              type: 'file-includes',
+              path: '/src/components/Boton.jsx',
+              pattern: 'texto\\s*=\\s*[\'"]Aceptar[\'"]',
+              label: "texto tiene el valor por defecto 'Aceptar'",
+              message: "Escribe { texto = 'Aceptar' } en el parámetro de Boton.",
+            },
             { type: 'lint-clean', label: 'ESLint no encuentra errores' },
           ],
           xp: 10,
@@ -500,13 +521,15 @@ function Tarjeta({ titulo, etiqueta = 'Nuevo', children }) {
 }
 \`\`\`
 
+Un detalle con el precio: para mostrar un signo \`$\` delante de un dato, escribe el \`$\` como texto normal y pega las llaves detrás: \`<p>\${precio}</p>\` se ve como \`$25\`. Ahí el \`$\` es solo una letra más, y \`{precio}\` es el dato.
+
 En un componente real mezclas las tres. Cuando algo no aparezca, revisa: ¿el nombre de la prop es igual en los dos archivos? ¿los números van con llaves? ¿pusiste \`{children}\`?`,
       challenges: [
         {
           id: 'm02-l5-c1',
           title: 'Escaparate de productos',
           instructions:
-            'Crea `/src/components/TarjetaProducto.jsx`. Recibe `nombre`, `precio`, una `etiqueta` con valor por defecto **Nuevo**, y `children` con la descripción. Muestra el nombre en un `h2`, la etiqueta, el precio como **$precio** y los hijos. `App.jsx` ya la usa tres veces: deben verse **Lámpara**, **$25**, **Lámpara de mesa con luz cálida**, la etiqueta **Oferta** (en la segunda tarjeta) y **Nuevo** en las otras dos.',
+            'Crea `/src/components/TarjetaProducto.jsx` (en **Nombre del archivo** escribe `components/TarjetaProducto.jsx`). Recibe `nombre`, `precio`, una `etiqueta` con valor por defecto **Nuevo**, y `children` con la descripción. Muestra el nombre en un `h2`, la etiqueta, el precio con el signo `$` delante (por ejemplo **$25**) y los hijos. `App.jsx` ya la usa tres veces: deben verse **Lámpara**, **$25**, **Lámpara de mesa con luz cálida**, la etiqueta **Oferta** (en la segunda tarjeta) y **Nuevo** en las otras dos.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import TarjetaProducto from './components/TarjetaProducto.jsx'
@@ -530,7 +553,7 @@ export default function App() {
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea el archivo y recibe todo en el parámetro: { nombre, precio, etiqueta = ..., children }.',
+            'Pulsa Nuevo archivo, escribe components/TarjetaProducto.jsx y recibe todo en el parámetro: { nombre, precio, etiqueta = ..., children }.',
             'Devuelve un div (return con paréntesis) con <h2>{nombre}</h2>, un <span> con la etiqueta, un <p> con el precio y {children}.',
             'El precio: <p>${precio}</p> (el $ es texto normal y {precio} es la variable). Valor por defecto: etiqueta = \'Nuevo\'.',
           ],
@@ -559,11 +582,10 @@ export default function App() {
             { type: 'text', match: 'Lámpara de mesa con luz cálida', label: 'Se ve la descripción (children)' },
             { type: 'text', match: 'Oferta', label: 'Se ve la etiqueta "Oferta"' },
             {
-              type: 'count',
-              selector: 'span',
-              min: 3,
-              label: 'Cada tarjeta muestra su etiqueta',
-              message: 'Muestra la etiqueta en un <span> dentro de cada tarjeta.',
+              type: 'text',
+              match: 'Nuevo',
+              label: 'Se ve la etiqueta por defecto "Nuevo"',
+              message: 'Muestra {etiqueta} en la tarjeta; sin etiqueta debe verse "Nuevo".',
             },
             {
               type: 'file-includes',

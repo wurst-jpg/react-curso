@@ -23,7 +23,7 @@ Es como una receta que termina con "sirve el plato": sin esa última palabra, no
 
 Dos reglas para no tropezar:
 
-1. Si tu JSX ocupa varias líneas, abre un paréntesis **en la misma línea** que \`return\`: \`return (\`. Si pones \`return\` solo en su línea, JavaScript piensa que ya terminaste y no devuelve nada.
+1. Si tu JSX va en las líneas de abajo, abre un paréntesis **en la misma línea** que \`return\`: \`return (\`. Si pones \`return\` solo en su línea, JavaScript piensa que ya terminaste y no devuelve nada. (Si todo cabe en una línea, \`return <h1>Hola</h1>\` también vale, sin paréntesis.)
 2. Un componente solo puede devolver **una cosa**. Si tienes varias, mételas dentro de un contenedor (como un \`div\`) o dentro de un envoltorio invisible \`<>\` ... \`</>\` (se llama fragmento).
 
 \`\`\`jsx
@@ -41,7 +41,7 @@ export default function App() {
           id: 'm01-l1-c1',
           title: 'El return con paréntesis',
           instructions:
-            'Ahora mismo la página sale en blanco: el `return` está solo en su línea. Arréglalo con `return (` y su `)` de cierre para que se vea el título **Mi tienda**.',
+            'Ahora mismo la página sale en blanco: el `return` está solo en su línea. Fíjate en el subrayado amarillo que pone el editor sobre el código de abajo: es el aviso de que nunca se ejecuta. Arréglalo con `return (` (el paréntesis en la misma línea) y su `)` de cierre para que se vea el título **Mi tienda**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -54,7 +54,7 @@ export default function App() {
           hints: [
             'JavaScript lee "return" solo en una línea como "devuelve nada" y se olvida del JSX de abajo.',
             'Escribe un paréntesis de apertura justo después de return, en la misma línea: return (',
-            'Abre con "return (" , deja el <h1> en medio y cierra con ")" en una línea propia, antes de la llave } final.',
+            'Abre con "return (", deja el <h1> en medio y cierra con ")" en una línea propia, antes de la llave } final.',
           ],
           solution: {
             '/src/App.jsx': `export default function App() {
@@ -68,7 +68,7 @@ export default function App() {
             {
               type: 'file-includes',
               path: '/src/App.jsx',
-              pattern: 'return\\s*\\(',
+              pattern: 'return[ \\t]*\\(',
               label: 'El return abre un paréntesis en su misma línea',
               message: 'Escribe "return (" con el paréntesis pegado a return, y ciérralo con ")" al final.',
             },
@@ -224,7 +224,7 @@ Otra diferencia con HTML: la palabra \`class\` ya la usa JavaScript, así que en
             {
               type: 'file-includes',
               path: '/src/App.jsx',
-              pattern: '\\{\\s*manzanas\\s*\\*\\s*3\\s*\\}',
+              pattern: '\\{\\s*\\(?\\s*(manzanas\\s*\\*\\s*3|3\\s*\\*\\s*manzanas)\\s*\\)?\\s*\\}',
               label: 'El 12 sale de la cuenta {manzanas * 3}',
               message: 'Dentro del párrafo escribe la cuenta entre llaves: {manzanas * 3}.',
             },
@@ -369,12 +369,14 @@ export default function App() {
           },
           checks: [
             { type: 'role', role: 'listitem', min: 3, label: 'El menú tiene tres elementos' },
+            { type: 'text', match: 'Inicio', label: 'Se ve "Inicio"' },
+            { type: 'text', match: 'Tienda', label: 'Se ve "Tienda"' },
             { type: 'text', match: 'Contacto', label: 'Se ve "Contacto"' },
             { type: 'text', match: 'Gracias por visitarnos', label: 'Se ve el pie "Gracias por visitarnos"' },
             {
               type: 'file-includes',
               path: '/src/App.jsx',
-              pattern: '<Menu\\s*/>[\\s\\S]*<Pie\\s*/>',
+              pattern: '<Menu[\\s/>][\\s\\S]*<Pie[\\s/>]',
               label: 'App usa <Menu /> y después <Pie />',
               message: 'En App escribe <Menu /> y, más abajo, <Pie />.',
             },
@@ -404,13 +406,13 @@ import Menu from './components/Menu.jsx'
 - \`export default\` es "este es el plato principal de este archivo". Al importarlo, le pones el nombre sin llaves.
 - También puedes ofrecer varios con \`export function Uno()\` y \`export function Dos()\`. Entonces se importan **con llaves y con el mismo nombre**: \`import { Uno, Dos } from './...'\`.
 
-La ruta empieza con \`./\` (esta carpeta). Para crear el archivo usa el botón **Nuevo archivo**.`,
+La ruta empieza con \`./\` (esta carpeta). Para crear un archivo usa el botón **Nuevo archivo**. En la casilla **Nombre del archivo** escribe la carpeta, una barra y el nombre, por ejemplo \`components/Menu.jsx\`: la carpeta se crea sola.`,
       challenges: [
         {
           id: 'm01-l4-c1',
           title: 'Mudanza a components',
           instructions:
-            'El componente `Encabezado` vive dentro de `App.jsx`. Mándalo a su propio archivo `/src/components/Encabezado.jsx` (con `export default`) e impórtalo en `App.jsx`. La página debe seguir mostrando el título **Mi blog**.',
+            'El componente `Encabezado` vive dentro de `App.jsx`. Mándalo a su propio archivo `/src/components/Encabezado.jsx` (con `export default`) e impórtalo en `App.jsx`. Para crear el archivo, en la casilla **Nombre del archivo** escribe `components/Encabezado.jsx` (la carpeta, una barra y el nombre). La página debe seguir mostrando el título **Mi blog**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `function Encabezado() {
@@ -429,7 +431,7 @@ export default function App() {
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea el archivo /src/components/Encabezado.jsx con el botón Nuevo archivo, escribiendo la ruta completa.',
+            'Pulsa Nuevo archivo y en la casilla Nombre del archivo escribe components/Encabezado.jsx.',
             'Copia la función Encabezado al archivo nuevo, ponle "export default" delante y bórrala de App.jsx.',
             "En App.jsx, arriba del todo: import Encabezado from './components/Encabezado.jsx'",
           ],
@@ -558,7 +560,7 @@ Si algo sale en blanco, revisa: ¿falta un \`return\`? ¿falta un \`export defau
           id: 'm01-l5-c1',
           title: 'Página personal con tres piezas',
           instructions:
-            'Construye una página con tres componentes, cada uno en su archivo dentro de `/src/components/`: `Encabezado.jsx` (un título **Mi página personal**), `Presentacion.jsx` (un párrafo **Soy Ana y estoy aprendiendo React**) y `Pie.jsx` (un párrafo **Hecho con React**). Usa los tres en `App.jsx`, en ese orden, con un contenedor o fragmento alrededor.',
+            'Construye una página con tres componentes, cada uno en su archivo dentro de `/src/components/`: `Encabezado.jsx` (un título **Mi página personal**), `Presentacion.jsx` (un párrafo **Soy Ana y estoy aprendiendo React**) y `Pie.jsx` (un párrafo **Hecho con React**). Para cada archivo, pulsa **Nuevo archivo** y en la casilla **Nombre del archivo** escribe, por ejemplo, `components/Pie.jsx` (la carpeta, una barra y el nombre). Usa los tres en `App.jsx`, en ese orden, con un contenedor o fragmento alrededor.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -568,7 +570,7 @@ Si algo sale en blanco, revisa: ¿falta un \`return\`? ¿falta un \`export defau
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea tres archivos con Nuevo archivo: /src/components/Encabezado.jsx, Presentacion.jsx y Pie.jsx.',
+            'Pulsa Nuevo archivo tres veces y escribe en Nombre del archivo: components/Encabezado.jsx, components/Presentacion.jsx y components/Pie.jsx.',
             "Cada archivo: export default function Nombre() { return <etiqueta>texto</etiqueta> }. En App.jsx: tres imports como import Pie from './components/Pie.jsx'.",
             'App devuelve return ( <> <Encabezado /> <Presentacion /> <Pie /> </> ) con los tres imports arriba.',
           ],
@@ -625,6 +627,13 @@ export default function App() {
               pattern: 'import\\s+\\w+\\s+from\\s+[\'"]\\./components/Encabezado(\\.jsx)?[\'"]',
               label: 'App.jsx importa Encabezado',
               message: "Falta import Encabezado from './components/Encabezado.jsx' en App.jsx.",
+            },
+            {
+              type: 'file-includes',
+              path: '/src/App.jsx',
+              pattern: '<Encabezado[\\s/>][\\s\\S]*<Presentacion[\\s/>][\\s\\S]*<Pie[\\s/>]',
+              label: 'App usa Encabezado, Presentacion y Pie en ese orden',
+              message: 'En App escribe <Encabezado />, luego <Presentacion /> y al final <Pie />.',
             },
             { type: 'role', role: 'heading', name: 'Mi página personal', label: 'Se ve el título "Mi página personal"' },
             { type: 'text', match: 'Soy Ana y estoy aprendiendo React', label: 'Se ve la presentación' },
