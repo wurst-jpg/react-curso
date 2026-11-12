@@ -60,3 +60,55 @@ test('el código escrito en el editor sobrevive a recargar', async ({ page }) =>
 
   await expect(page.locator('.cm-content').first()).toContainText(marca)
 })
+
+test('autocompletar: sugiere useState y clases de Tailwind, Tab elige y el interruptor no recarga nada', async ({ page }) => {
+  await page.goto('/reto/m00-l1-c1')
+  const editor = page.locator('.cm-content').first()
+  await expect(editor).toBeVisible()
+  const lista = page.locator('.cm-tooltip-autocomplete')
+
+  await editor.click()
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('useS')
+  await expect(lista).toContainText('useState')
+  await page.waitForTimeout(300) // CodeMirror ignora Enter/Tab justo al abrirse la lista
+  await page.keyboard.press('Tab')
+  await expect(editor).toContainText('useState')
+  await expect(lista).toHaveCount(0)
+
+  // Plantilla: el nombre del componente se escribe en los dos sitios a la vez.
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('comp')
+  await expect(lista).toContainText('Plantilla: un componente nuevo')
+  await page.waitForTimeout(300) // CodeMirror ignora Enter/Tab justo al abrirse la lista
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('Hola')
+  await expect(editor).toContainText('function Hola()')
+  await expect(editor).toContainText('export default Hola')
+
+  // Solo dentro de className aparecen las clases de Tailwind.
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('const x = <div className="bg-bl')
+  await expect(lista).toContainText('bg-blue-500')
+
+  // El interruptor: sin recargar la vista previa ni perder el código.
+  await page.keyboard.press('Escape')
+  await page.locator('iframe').first().evaluate((el) => el.setAttribute('data-marca', 'igual'))
+  const texto = await editor.innerText()
+  const boton = page.getByRole('button', { name: /autocompletar/i })
+  await boton.click()
+  await expect(boton).toHaveAttribute('aria-pressed', 'false')
+  await expect(editor).toContainText('bg-bl')
+  expect(await editor.innerText()).toBe(texto)
+  await expect(page.locator('iframe').first()).toHaveAttribute('data-marca', 'igual')
+
+  await editor.click()
+  await page.keyboard.press('ControlOrMeta+a')
+  await page.keyboard.type('useS')
+  await page.waitForTimeout(600)
+  await expect(lista).toHaveCount(0)
+
+  // Se recuerda al recargar.
+  await page.reload()
+  await expect(page.getByRole('button', { name: /autocompletar/i })).toHaveAttribute('aria-pressed', 'false')
+})

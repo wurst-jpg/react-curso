@@ -6,12 +6,15 @@ import { runFileChecks } from '../checks/fileChecks.js'
 import { summarizeResults } from '../checks/summarize.js'
 import { lintSource } from '../lint/lintSource.js'
 import { createLintExtension } from '../lint/lintExtension.js'
+import { createAutocompleteController } from '../autocomplete/autocompleteExtension.js'
 import { completeChallenge } from '../progress/progress.js'
 import { useProgress } from '../progress/ProgressContext.jsx'
 import { saveCode, solutionFiles } from '../progress/code.js'
+import { loadSettings, saveSettings } from '../progress/settings.js'
 import { editorFiles } from '../sandbox/editorFiles.js'
 import { useCheckRunner } from '../sandbox/useCheckRunner.js'
 import FileTabsBar from './FileTabsBar.jsx'
+import AutocompleteToggle from './AutocompleteToggle.jsx'
 import CheckPanel from './CheckPanel.jsx'
 import HintBox from './HintBox.jsx'
 import Celebration from './Celebration.jsx'
@@ -63,7 +66,19 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   const { progress, complete, viewSolution } = useProgress()
   const files = useMemo(() => editorFiles(sandpack.files), [sandpack.files])
   const paths = Object.keys(files)
-  const extensions = useMemo(() => createLintExtension(), [])
+
+  // El interruptor del autocompletado no reconfigura el editor: las extensiones se crean una
+  // sola vez y solo cambia lo que consultan, así no se recrea el editor ni la vista previa.
+  const [autocomplete, setAutocomplete] = useState(() => loadSettings().autocomplete)
+  const [controller] = useState(() => createAutocompleteController({ enabled: autocomplete, files }))
+  const extensions = useMemo(() => [createLintExtension(), controller.extension], [controller])
+  useEffect(() => controller.setFiles(files), [controller, files])
+  function toggleAutocomplete() {
+    const next = !autocomplete
+    controller.setEnabled(next)
+    setAutocomplete(next)
+    saveSettings({ autocomplete: next })
+  }
 
   const previewRef = useRef(null)
   const previewBoxRef = useRef(null)
@@ -195,6 +210,9 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
           onCreate={createFile}
           onDelete={deleteFile}
         />
+        <div className="flex justify-end">
+          <AutocompleteToggle enabled={autocomplete} onToggle={toggleAutocomplete} />
+        </div>
         <div className="h-[55vh] min-h-72 overflow-hidden rounded-lg border border-slate-700 lg:h-[60vh]">
           <SandpackCodeEditor
             showTabs={false}

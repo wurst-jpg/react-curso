@@ -268,3 +268,30 @@ test('si la comprobación falla por un error inesperado, avisa y el botón vuelv
   expect(screen.getByRole('button', { name: 'Comprobar' })).toBeEnabled()
   expect(screen.queryByText('¡Reto superado!')).not.toBeInTheDocument()
 })
+
+test('el interruptor de autocompletar cambia aria-pressed y se recuerda', async () => {
+  const user = userEvent.setup()
+  const { unmount } = renderAt('/reto/m00-l1-c1')
+  const toggle = screen.getByRole('button', { name: /autocompletar/i })
+  expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  expect(toggle).toHaveTextContent('Autocompletar: activado')
+
+  await user.click(toggle)
+  expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  expect(toggle).toHaveTextContent('Autocompletar: desactivado')
+  expect(JSON.parse(localStorage.getItem('curso-react:settings:v1'))).toEqual({ autocomplete: false })
+
+  unmount()
+  renderAt('/reto/m00-l1-c1')
+  expect(screen.getByRole('button', { name: /autocompletar/i })).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('cambiar el interruptor no pierde el código escrito', async () => {
+  const user = userEvent.setup()
+  renderAt('/reto/m00-l1-c1')
+  const editor = screen.getByLabelText('Editor de código')
+  await user.clear(editor)
+  await user.type(editor, 'mi código')
+  await user.click(screen.getByRole('button', { name: /autocompletar/i }))
+  expect(screen.getByLabelText('Editor de código')).toHaveValue('mi código')
+})
