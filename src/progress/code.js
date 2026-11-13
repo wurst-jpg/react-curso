@@ -74,6 +74,9 @@ export function cleanStartFiles(modules, id) {
   return startOf(found.flat, found.i, false)
 }
 
-export function solutionFiles(challenge, currentFiles) {
-  return { ...currentFiles, ...challenge.solution }
+// Con `startFrom: 'previous'` la solución es un delta sobre el inicio limpio (no sobre los
+// archivos del alumno, que pueden tener otros nombres). `cleanFiles` es ese inicio limpio.
+export function solutionFiles(challenge, currentFiles, cleanFiles) {
+  const base = challenge.startFrom === 'previous' && cleanFiles ? cleanFiles : currentFiles
+  return { ...base, ...challenge.solution }
 }

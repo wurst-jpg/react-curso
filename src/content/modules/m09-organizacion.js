@@ -85,13 +85,13 @@ export default function useContador() {
 const { cuenta, setCuenta } = useContador()
 \`\`\`
 
-Los archivos de hooks van en una carpeta \`/src/hooks\`. Para crear un archivo dentro de una carpeta, en "Nombre del archivo" escribe la carpeta y el nombre, por ejemplo \`hooks/useContador.js\` (la carpeta se crea sola). No tienen JSX, así que pueden terminar en \`.js\`.`,
+Los archivos de hooks van en una carpeta \`/src/hooks\`. Para crear un archivo dentro de una carpeta, pulsa **Nuevo archivo** y en **Nombre del archivo** escribe la carpeta y el nombre, por ejemplo \`hooks/useContador.js\` (la carpeta se crea sola). No tienen JSX, así que pueden terminar en \`.js\`.`,
       challenges: [
         {
           id: 'm09-l1-c1',
           title: 'Saca la cuenta a un hook',
           instructions:
-            'Ahora `App.jsx` lleva la cuenta él solo. Crea el archivo `/src/hooks/useContador.js` (en "Nombre del archivo" escribe `hooks/useContador.js`) con un hook `useContador` que tenga el estado y las funciones `sumar` y `restar`, y devuélvelos en un objeto. Después úsalo en `App.jsx` (importa el hook y llámalo). Al pulsar **Sumar** la página debe mostrar **Cuenta: 1**.',
+            'Ahora `App.jsx` lleva la cuenta él solo. Crea el archivo `/src/hooks/useContador.js` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `hooks/useContador.js`) con un hook `useContador` que tenga el estado y las funciones `sumar` y `restar`, y devuélvelos en un objeto. Después úsalo en `App.jsx` (importa el hook y llámalo). Al pulsar **Sumar** la página debe mostrar **Cuenta: 1**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'
@@ -273,7 +273,7 @@ import useContador from '../hooks/useContador.js'
           id: 'm09-l2-c1',
           title: 'Mueve una pieza a components',
           instructions:
-            'En `App.jsx` la tarjeta está escrita junto con todo lo demás. Crea `/src/components/Tarjeta.jsx` (en "Nombre del archivo" escribe `components/Tarjeta.jsx`) con ese componente (con `export default`), bórralo de `App.jsx` e impórtalo desde la nueva carpeta. La página debe seguir mostrando los títulos **Café** y **Pan**.',
+            'En `App.jsx` la tarjeta está escrita junto con todo lo demás. Crea `/src/components/Tarjeta.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Tarjeta.jsx`) con ese componente (con `export default`), bórralo de `App.jsx` e impórtalo desde la nueva carpeta. La página debe seguir mostrando los títulos **Café** y **Pan**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `function Tarjeta({ titulo, precio }) {
@@ -518,7 +518,7 @@ export default function Etiqueta() {
           id: 'm09-l3-c2',
           title: 'Crea tu propio Context',
           instructions:
-            'Crea el tablón tú mismo: el archivo `/src/context/MonedaContext.jsx` (en "Nombre del archivo" escribe `context/MonedaContext.jsx`) con `export const MonedaContext = createContext(...)` (valor por defecto `"pesos"`). En `App.jsx` cuelga el valor `"euros"` con `MonedaContext.Provider`, y en `Precio.jsx` léelo con `useContext` para mostrar **50 euros**.',
+            'Crea el tablón tú mismo: el archivo `/src/context/MonedaContext.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `context/MonedaContext.jsx`) con `export const MonedaContext = createContext(...)` (valor por defecto `"pesos"`). En `App.jsx` cuelga el valor `"euros"` con `MonedaContext.Provider`, y en `Precio.jsx` léelo con `useContext` para mostrar **50 euros**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/components/Precio.jsx': `export default function Precio({ valor }) {
@@ -727,7 +727,7 @@ export default function App() {
           id: 'm09-l4-c2',
           title: 'Mini app de gastos, bien ordenada',
           instructions:
-            'Los componentes `FormGasto` y `ListaGastos` ya están hechos y esperan encontrar un tablón `GastosContext` con `{ gastos, total, agregar }`. Tú construyes el resto (al crear cada archivo, escribe en "Nombre del archivo" la carpeta y el nombre, por ejemplo `hooks/useGastos.js`):\n\n1. `/src/hooks/useGastos.js`: hook con el estado `gastos` (lista vacía al inicio), una función `agregar(nombre, monto)` que añade un gasto `{ id, nombre, monto }` (con el monto convertido a número) y el `total` sumado. Devuelve `{ gastos, total, agregar }`.\n2. `/src/context/GastosContext.jsx`: exporta `GastosContext` y un `GastosProvider` que use tu hook y cuelgue su resultado.\n3. En `App.jsx`, envuelve todo con `<GastosProvider>`.\n\nLa vista previa mostrará un error hasta que crees el archivo del Context; es normal. Al agregar un gasto Taxi de 80 debe aparecer **Taxi: 80** en la lista, y al agregar después Cena de 40 el total debe decir **Total: 120**.',
+            'Los componentes `FormGasto` y `ListaGastos` ya están hechos y esperan encontrar un tablón `GastosContext` con `{ gastos, total, agregar }`. Tú construyes el resto (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe la carpeta y el nombre, por ejemplo `hooks/useGastos.js`):\n\n1. `/src/hooks/useGastos.js`: hook con el estado `gastos` (lista vacía al inicio), una función `agregar(nombre, monto)` que añade un gasto `{ id, nombre, monto }` (con el monto convertido a número) y el `total` sumado. Devuelve `{ gastos, total, agregar }`.\n2. `/src/context/GastosContext.jsx`: exporta `GastosContext` y un `GastosProvider` que use tu hook y cuelgue su resultado.\n3. En `App.jsx`, envuelve todo con `<GastosProvider>`.\n\nLa vista previa mostrará un error hasta que crees el archivo del Context; es normal. Al agregar un gasto Taxi de 80 debe aparecer **Taxi: 80** en la lista, y al agregar después Cena de 40 el total debe decir **Total: 120**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/components/FormGasto.jsx': `import { useContext, useState } from 'react'
@@ -790,7 +790,7 @@ export default function App() {
           hints: [
             'Empieza por el hook: en /src/hooks/useGastos.js usa const [gastos, setGastos] = useState([]). Para agregar crea un gasto nuevo y haz setGastos([...gastos, nuevo]).',
             'El total se puede calcular con un ciclo: let total = 0, luego for (const g of gastos) { total = total + g.monto }. Devuelve return { gastos, total, agregar }. El Context: createContext(null) y GastosProvider que hace const valor = useGastos() y cuelga value={valor}.',
-            "El nuevo gasto es { id: gastos.length + 1, nombre, monto: Number(monto) }. El Provider recibe { children } y devuelve <GastosContext.Provider value={valor}>{children}</GastosContext.Provider>. En App.jsx importa { GastosProvider } y envuelve <main> con él.",
+            "El nuevo gasto es { id: Date.now(), nombre, monto: Number(monto) }. El Provider recibe { children } y devuelve <GastosContext.Provider value={valor}>{children}</GastosContext.Provider>. En App.jsx importa { GastosProvider } y envuelve <main> con él.",
           ],
           solution: {
             '/src/hooks/useGastos.js': `import { useState } from 'react'

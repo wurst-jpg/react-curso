@@ -152,4 +152,15 @@ describe('solutionFiles', () => {
     expect(out).toEqual({ '/a.js': 'a1-sol', '/b.js': 'b' })
     expect(cur['/a.js']).toBe('mío')
   })
+  it('startFrom previous: la solución parte del inicio limpio, no de los archivos del alumno', () => {
+    const cur = { '/a.js': 'mío', '/Mio.jsx': 'archivo propio' }
+    const clean = cleanStartFiles(modules, 'c3')
+    const out = solutionFiles(modules[0].lessons[0].challenges[2], cur, clean)
+    expect(out).toEqual({ '/a.js': 'a3-sol' })
+  })
+  it('sin startFrom ignora el inicio limpio', () => {
+    const cur = { '/a.js': 'mío', '/b.js': 'b' }
+    const out = solutionFiles(modules[0].lessons[0].challenges[0], cur, { '/x.js': 'x' })
+    expect(out).toEqual({ '/a.js': 'a1-sol', '/b.js': 'b' })
+  })
 })

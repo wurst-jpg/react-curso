@@ -78,6 +78,7 @@ function ChallengeView({ entry, nextChallenge }) {
             onRevealHint={revealHint}
             onRestart={restart}
             canCleanStart={challenge.startFrom === 'previous'}
+            getCleanStart={() => cleanStartFiles(course, challenge.id)}
           />
         </div>
       </SandpackProvider>

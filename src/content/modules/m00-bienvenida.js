@@ -28,7 +28,7 @@ Casi siempre trabajarás en \`App.jsx\`. Los otros dos se quedan quietos.
 Cómo usar el editor:
 
 - Escribe tu código en el editor, y la vista previa se actualiza sola.
-- **Comprobar** revisa si tu reto está bien hecho.
+- **Comprobar** revisa si tu reto está bien hecho. Al pulsar **Comprobar** la vista previa se reinicia desde cero y tarda unos segundos; es normal.
 - **Pista** te da una ayuda poco a poco; **Nuevo archivo** (junto a las pestañas) crea un archivo.
 - **Ver solución** te muestra la respuesta, pero da solo la mitad de XP.`,
       challenges: [

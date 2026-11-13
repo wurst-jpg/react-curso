@@ -802,7 +802,21 @@ Dos cosas para que la app sea cómoda de probar y de usar:
 - Las etiquetas accesibles (\`aria-label\`) ayudan a quien usa lector de pantalla, y también a nuestra comprobación a encontrar tus campos. Ejemplo: \`<input aria-label="Monto" />\`.
 - Valida **con tu código** (un \`if\`), no con atributos como \`required\` o \`min\`: así tú controlas el aviso que se muestra.
 
-Los gastos viven en el estado de un componente (\`useState\`), y los botones llaman funciones que cambian ese estado.`,
+Los gastos viven en el estado de un componente (\`useState\`), y los botones llaman funciones que cambian ese estado.
+
+Tres herramientas útiles para esta lección:
+
+- **Un menú desplegable** para elegir la categoría. Es como una lista de opciones en un formulario de papel: marcas una sola. Se escribe así:
+
+\`\`\`jsx
+<select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+  {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
+</select>
+\`\`\`
+
+  \`value\` es la opción elegida ahora, y \`onChange\` la actualiza cuando la persona escoge otra. Cada \`<option>\` sale de la lista \`CATEGORIAS\` con \`map\`.
+- \`.trim()\` quita los espacios de los extremos de un texto: \`'  Café '.trim()\` queda \`'Café'\`. Sirve para no aceptar una descripción hecha solo de espacios.
+- \`reduce\` suma todos los gastos en un solo número: \`gastos.reduce((suma, g) => suma + g.monto, 0)\`. Es como ir echando monedas a una alcancía: empiezas con 0 (el último valor del paréntesis) y, por cada gasto, \`suma\` crece con su monto. Al final tienes el total.`,
       challenges: [
         {
           id: 'm11-l2-c1',
@@ -877,7 +891,7 @@ Los 3 gastos de ejemplo deben seguir estando al inicio.`,
       title: 'Entender tus gastos',
       explanation: `Anotar gastos es el principio; lo útil es **entender** en qué se va el dinero. Es como separar los billetes en sobres: uno para comida, otro para transporte, otro para diversión.
 
-Para calcular el total de una categoría combinas dos herramientas que ya conoces: \`filter\` (quedarte solo con los de esa categoría) y \`reduce\` (sumarlos).
+Para calcular el total de una categoría combinas dos herramientas: \`filter\` (la viste con las listas: te quedas solo con los de esa categoría) y \`reduce\` (la viste en la lección anterior: los suma).
 
 Para el filtro, un estado guarda cuál categoría está elegida, y la lista que dibujas es la versión filtrada del arreglo completo. Los gastos originales **no se tocan**: solo cambias lo que muestras.`,
       challenges: [
@@ -939,7 +953,17 @@ Para el filtro, un estado guarda cuál categoría está elegida, y la lista que 
 - \`localStorage.getItem('clave')\` lo recupera (o da \`null\` si no hay nada).
 - Solo guarda **texto**, así que conviertes con \`JSON.stringify\` (de arreglo a texto) y \`JSON.parse\` (de texto a arreglo).
 
-Cuándo usarlo: lees al **empezar** (valor inicial del estado) y guardas cada vez que los gastos **cambian** (con \`useEffect\`).`,
+Cuándo usarlo: lees al **empezar** (valor inicial del estado) y guardas cada vez que los gastos **cambian** (con \`useEffect\`).
+
+Leer puede fallar (por ejemplo, si el texto guardado está dañado o el navegador no deja usar \`localStorage\`). Para que la app no se rompa, envuelves el intento en un \`try/catch\`, que es como decir "intenta esto y, si sale mal, haz esto otro":
+
+\`\`\`js
+try {
+  // intenta leer y convertir el texto guardado
+} catch {
+  // si algo falló, usa una lista vacía
+}
+\`\`\``,
       challenges: [
         {
           id: 'm11-l4-c1',
@@ -1005,7 +1029,7 @@ Importa todo desde \`'react-router'\`. En esta vista previa usa \`<MemoryRouter>
 
 Si la comprobación de agregar y borrar falla, borra a mano en la vista previa cualquier gasto que empiece por **Zzz** y vuelve a comprobar.`,
           hints: [
-            "Mete <MemoryRouter> y un <Routes> con tres <Route>: '/', '/resumen' y '/gasto/:id'. El menú (<nav> con dos <Link>) va dentro del MemoryRouter pero fuera de <Routes>, para que se vea siempre.",
+            "Mete <MemoryRouter> (en este proyecto puede ir en App.jsx; en el módulo 10 lo pusiste en main.jsx) y un <Routes> con tres <Route>: '/', '/resumen' y '/gasto/:id'. El menú (<nav> con dos <Link>) va dentro del MemoryRouter pero fuera de <Routes>, para que se vea siempre.",
             'Deja los gastos (useState + localStorage) en App y pásalos a cada página por props. En la página de detalle usa const { id } = useParams() y busca con gastos.find((g) => String(g.id) === id).',
             "En la lista, la descripción pasa a ser <Link to={'/gasto/' + gasto.id}>{gasto.descripcion}</Link>. En el detalle, añade <Link to=\"/\">Volver</Link> y el título <h2>Detalle del gasto</h2>.",
           ],

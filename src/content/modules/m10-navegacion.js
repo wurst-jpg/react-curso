@@ -347,7 +347,7 @@ export default function App() {
           id: 'm10-l2-c2',
           title: 'Página no encontrada',
           instructions:
-            'El menú tiene un **Enlace roto** que va a `/nada`, una dirección que no existe. Crea el archivo `/src/pages/NoEncontrada.jsx` (en "Nombre del archivo" escribe `pages/NoEncontrada.jsx`) con un título **Página no encontrada** y un `Link` **Volver al inicio** hacia `/`. Después agrega en `App.jsx` la ruta comodín `path="*"` (al final de `<Routes>`).',
+            'El menú tiene un **Enlace roto** que va a `/nada`, una dirección que no existe. Crea el archivo `/src/pages/NoEncontrada.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `pages/NoEncontrada.jsx`) con un título **Página no encontrada** y un `Link` **Volver al inicio** hacia `/`. Después agrega en `App.jsx` la ruta comodín `path="*"` (al final de `<Routes>`).',
           files: {
             '/src/main.jsx': MAIN_ROUTER,
             '/src/pages/Inicio.jsx': INICIO,
@@ -713,7 +713,7 @@ export default function Gastos() {
           id: 'm10-l4-c2',
           title: 'Mini app de gastos con páginas',
           instructions:
-            'Arma la app completa. Ya tienes `Inicio.jsx`, `datos.js` y un menú con **Inicio**, **Gastos** y **Enlace roto** (hacia `/nada`). Crea tres páginas en `/src/pages` (al crear cada archivo escribe en "Nombre del archivo" algo como `pages/Gastos.jsx`):\n\n- `Gastos.jsx`: título **Lista de gastos** y la lista de gastos, cada nombre es un enlace a su detalle.\n- `Detalle.jsx`: lee el `id` con `useParams`, muestra el monto con el formato **Monto: 120** (para Cine) y un enlace **Volver a la lista** hacia `/gastos`.\n- `NoEncontrada.jsx`: título **Página no encontrada**.\n\nLuego registra las 4 rutas en `App.jsx`: `/`, `/gastos`, `/gasto/:id` y la comodín `*`.',
+            'Arma la app completa. Ya tienes `Inicio.jsx`, `datos.js` y un menú con **Inicio**, **Gastos** y **Enlace roto** (hacia `/nada`). Crea tres páginas en `/src/pages` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe algo como `pages/Gastos.jsx`):\n\n- `Gastos.jsx`: título **Lista de gastos** y la lista de gastos, cada nombre es un enlace a su detalle.\n- `Detalle.jsx`: lee el `id` con `useParams`, muestra el monto con el formato **Monto: 120** (para Cine) y un enlace **Volver a la lista** hacia `/gastos`.\n- `NoEncontrada.jsx`: título **Página no encontrada**.\n\nLuego registra las 4 rutas en `App.jsx`: `/`, `/gastos`, `/gasto/:id` y la comodín `*`.',
           files: {
             '/src/main.jsx': MAIN_ROUTER,
             '/src/datos.js': DATOS,

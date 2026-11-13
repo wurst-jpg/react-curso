@@ -769,7 +769,7 @@ export default function App() {
           id: 'm07-l4-c2',
           title: 'Formulario de gastos completo',
           instructions:
-            'Reto del módulo. Crea el archivo `FormularioGasto.jsx` dentro de una carpeta `components` (en el botón de nuevo archivo escribe `components/FormularioGasto.jsx`; se crea la carpeta con el archivo; la vista previa mostrará un error hasta que lo hagas, es normal): un formulario con tres campos (aria-label **Descripción**, **Monto** y **Categoría**), botón **Guardar**, `e.preventDefault()` y el aviso **El monto debe ser mayor que 0**. Al guardar bien llama a `onAgregar({ descripcion, monto: Number(monto), categoria })`. `App.jsx` ya lo usa: no hace falta tocarlo.',
+            'Reto del módulo. Crea el archivo `FormularioGasto.jsx` dentro de una carpeta `components` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/FormularioGasto.jsx`; se crea la carpeta con el archivo; la vista previa mostrará un error hasta que lo hagas, es normal): un formulario con tres campos (aria-label **Descripción**, **Monto** y **Categoría**), botón **Guardar**, `e.preventDefault()` y el aviso **El monto debe ser mayor que 0**. Al guardar bien llama a `onAgregar({ descripcion, monto: Number(monto), categoria })`. `App.jsx` ya lo usa: no hace falta tocarlo.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'

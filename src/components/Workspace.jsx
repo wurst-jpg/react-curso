@@ -61,7 +61,7 @@ async function runAllChecks(checks, files, run, manualDone) {
   return [...pageResults, ...iframeResults].sort((a, b) => a.index - b.index)
 }
 
-export default function Workspace({ challenge, nextChallenge, hintsShown, onRevealHint, onRestart, canCleanStart }) {
+export default function Workspace({ challenge, nextChallenge, hintsShown, onRevealHint, onRestart, canCleanStart, getCleanStart }) {
   const { sandpack, listen, dispatch } = useSandpack()
   const { progress, complete, viewSolution } = useProgress()
   const files = useMemo(() => editorFiles(sandpack.files), [sandpack.files])
@@ -158,7 +158,7 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
     setConfirming(null)
     if (kind === 'solution') {
       viewSolution(challenge.id)
-      const solved = solutionFiles(challenge, files)
+      const solved = solutionFiles(challenge, files, getCleanStart?.())
       saveCode(challenge.id, solved)
       restart('solution', solved)
     } else {

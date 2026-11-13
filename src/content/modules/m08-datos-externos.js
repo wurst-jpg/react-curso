@@ -152,7 +152,7 @@ export default function App() {
     {
       id: 'm08-l2',
       title: 'Traer datos con retraso',
-      explanation: `Los datos de una app de verdad (tus gastos guardados, por ejemplo) viven en un **servidor**: otra computadora lejos de aquí. Pedirlos es como pedir una pizza por teléfono: no llega al instante. Mientras tanto, tu app tiene que seguir viva.
+      explanation: `Los datos de una app de verdad (tus gastos guardados, por ejemplo) viven en un **servidor**: otro computador lejos de aquí. Pedirlos es como pedir una pizza por teléfono: no llega al instante. Mientras tanto, tu app tiene que seguir viva.
 
 En JavaScript, ese "te lo llevo en un rato" se llama **promesa**. Se usa así:
 
@@ -187,7 +187,7 @@ useEffect(() => {
           id: 'm08-l2-c1',
           title: 'Crea tu servidor de mentira',
           instructions:
-            'La página ya sabe pedir gastos, pero le falta quien los entregue. Crea el archivo `api.js` (en el botón de nuevo archivo escribe `api.js`) que exporte una función `obtenerGastos` que devuelva una promesa que, tras **250** milisegundos (no uses más de 1000: el corrector espera solo un momento), entregue tres gastos: **Café** (25), **Autobús** (12) y **Pan** (8). Cada gasto es un objeto con `id`, `descripcion` (sin tilde, igual que en `App.jsx`) y `monto`. La vista previa mostrará un error hasta que crees el archivo; es normal.',
+            'La página ya sabe pedir gastos, pero le falta quien los entregue. Crea el archivo `api.js` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `api.js`) que exporte una función `obtenerGastos` que devuelva una promesa que, tras **250** milisegundos (no uses más de 1000: el corrector espera solo un momento), entregue tres gastos: **Café** (25), **Autobús** (12) y **Pan** (8). Cada gasto es un objeto con `id`, `descripcion` (sin tilde, igual que en `App.jsx`) y `monto`. La vista previa mostrará un error hasta que crees el archivo; es normal.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useEffect, useState } from 'react'
@@ -251,7 +251,7 @@ export default function App() {
               role: 'listitem',
               name: 'Café',
               label: 'En la lista aparece "Café"',
-              message: 'No veo "Café" en la lista. ¿obtenerGastos entrega los gastos con resolve(...)? Revisa que las claves sean id, descripcion (sin tilde) y monto. Si pusiste un tiempo largo, espera a que aparezca la lista y vuelve a pulsar Comprobar.',
+              message: 'No veo "Café" en la lista. ¿obtenerGastos entrega los gastos con resolve(...)? Revisa que las claves sean id, descripcion (sin tilde) y monto. Usa 250 milisegundos de espera (no más de 1000).',
             },
             {
               type: 'role',
@@ -550,8 +550,8 @@ export default function App() {
           activeFile: '/src/App.jsx',
           hints: [
             'Hacen falta tres cosas: un estado error, un .catch después del .then, y mostrar el error en el JSX.',
-            'const [error, setError] = useState(\'\'). En cargar: setError(\'\') al empezar; .catch(() => { setError(\'No se pudo cargar los gastos.\'); setCargando(false) }). En el JSX: {error && <p>{error}</p>}.',
-            'Pega .catch(() => { setError(\'No se pudo cargar los gastos.\'); setCargando(false) }) justo después del cierre del .then(...) y añade {error && <p className="text-red-600">{error}</p>} bajo los botones. Empieza cada carga con setError(\'\') para que el mensaje desaparezca al cargar bien.',
+            'const [error, setError] = useState(\'\'). En cargar: setError(\'\') al empezar; .catch(() => { setError(\'No se pudo cargar la lista de gastos.\'); setCargando(false) }). En el JSX: {error && <p>{error}</p>}.',
+            'Pega .catch(() => { setError(\'No se pudo cargar la lista de gastos.\'); setCargando(false) }) justo después del cierre del .then(...) y añade {error && <p className="text-red-600">{error}</p>} bajo los botones. Empieza cada carga con setError(\'\') para que el mensaje desaparezca al cargar bien.',
           ],
           solution: {
             '/src/App.jsx': `import { useEffect, useState } from 'react'
@@ -571,7 +571,7 @@ export default function App() {
         setCargando(false)
       })
       .catch(() => {
-        setError('No se pudo cargar los gastos.')
+        setError('No se pudo cargar la lista de gastos.')
         setCargando(false)
       })
   }
@@ -654,7 +654,7 @@ Un \`return\` temprano (como el de los formularios) deja el código plano y fác
           id: 'm08-l4-c1',
           title: 'Lista de gastos con estados',
           instructions:
-            'Reto del módulo. `App.jsx` ya carga los gastos, tiene el formulario para agregar uno y usa `<ListaGastos />`. Crea el archivo que falta: en el botón de nuevo archivo escribe `components/ListaGastos.jsx`. Recibe `gastos`, `cargando` y `error` por props y muestra **Cargando…** mientras carga, el texto del error si lo hay, o la lista de gastos (`descripcion: monto`, cada uno en un `<li>`). La vista previa mostrará un error hasta que crees el archivo; es normal. Antes de Comprobar, pulsa **Cargar gastos** y espera la lista.',
+            'Reto del módulo. `App.jsx` ya carga los gastos, tiene el formulario para agregar uno y usa `<ListaGastos />`. Crea el archivo que falta: pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/ListaGastos.jsx`. Recibe `gastos`, `cargando` y `error` por props y muestra **Cargando…** mientras carga, el texto del error si lo hay, o la lista de gastos (`descripcion: monto`, cada uno en un `<li>`). La vista previa mostrará un error hasta que crees el archivo; es normal.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/api.js': API,
@@ -678,7 +678,7 @@ export default function App() {
         setCargando(false)
       })
       .catch(() => {
-        setError('No se pudo cargar los gastos.')
+        setError('No se pudo cargar la lista de gastos.')
         setCargando(false)
       })
   }
@@ -764,7 +764,7 @@ export default function App() {
               role: 'listitem',
               name: 'Café',
               label: 'Al terminar de cargar la lista muestra "Café"',
-              message: 'No veo "Café" en la lista. Dibuja cada gasto en un <li> con gastos.map. Antes de Comprobar, pulsa Cargar gastos y espera la lista.',
+              message: 'No veo "Café" en la lista. Dibuja cada gasto en un <li> con gastos.map.',
             },
             {
               type: 'interaction',
@@ -775,7 +775,7 @@ export default function App() {
               ],
               expect: { type: 'role', role: 'listitem', name: 'Taxi' },
               label: 'Un gasto nuevo ("Taxi") aparece en la lista',
-              message: 'Agregué "Taxi" y no apareció en la lista. ¿ListaGastos dibuja todos los elementos de la prop gastos? Antes de Comprobar, pulsa Cargar gastos y espera la lista.',
+              message: 'Agregué "Taxi" y no apareció en la lista. ¿ListaGastos dibuja todos los elementos de la prop gastos?',
             },
             {
               type: 'interaction',
