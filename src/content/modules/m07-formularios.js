@@ -198,7 +198,7 @@ function cambiar(e) {
           id: 'm07-l2-c1',
           title: 'Descripción y monto',
           instructions:
-            'Añade el campo del monto: un `<input type="number">` con `aria-label="Monto"`, conectado a un estado `monto` (con `useState`). Al escribir **Café** en la descripción y **15** en el monto, la página debe decir **Gasto: Café por 15**.',
+            'Añade el campo del monto: un `<input type="number">` con `aria-label="Monto"` (el nombre que se busca es **Monto**; el otro campo se llama **Descripción**), conectado a un estado `monto` (con `useState`). Al escribir **Café** en la descripción y **15** en el monto, la página debe decir **Gasto: Café por 15**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'
@@ -484,7 +484,7 @@ export default function App() {
               path: '/src/App.jsx',
               pattern: 'preventDefault\\s*\\(',
               label: 'Usas e.preventDefault()',
-              message: 'Falta e.preventDefault() al inicio de guardar; sin eso la página se recarga.',
+              message: 'Falta e.preventDefault() al inicio de guardar; sin eso la página se recarga y la vista previa puede dejar de responder.',
             },
             {
               type: 'file-includes',
@@ -769,7 +769,7 @@ export default function App() {
           id: 'm07-l4-c2',
           title: 'Formulario de gastos completo',
           instructions:
-            'Reto del módulo. Crea el archivo `FormularioGasto.jsx` dentro de una carpeta `components` (en el botón de nuevo archivo escribe `components/FormularioGasto.jsx`; se crea la carpeta con el archivo): un formulario con tres campos (aria-label **Descripción**, **Monto** y **Categoría**), botón **Guardar**, `e.preventDefault()`, el aviso **El monto debe ser mayor que 0** y campos vacíos tras guardar. Al guardar bien llama a `onAgregar({ descripcion, monto: Number(monto), categoria })`. `App.jsx` ya lo usa: no hace falta tocarlo.',
+            'Reto del módulo. Crea el archivo `FormularioGasto.jsx` dentro de una carpeta `components` (en el botón de nuevo archivo escribe `components/FormularioGasto.jsx`; se crea la carpeta con el archivo; la vista previa mostrará un error hasta que lo hagas, es normal): un formulario con tres campos (aria-label **Descripción**, **Monto** y **Categoría**), botón **Guardar**, `e.preventDefault()` y el aviso **El monto debe ser mayor que 0**. Al guardar bien llama a `onAgregar({ descripcion, monto: Number(monto), categoria })`. `App.jsx` ya lo usa: no hace falta tocarlo.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'
@@ -801,7 +801,7 @@ export default function App() {
           activeFile: '/src/App.jsx',
           hints: [
             'Crea /src/components/FormularioGasto.jsx con una función FormularioGasto({ onAgregar }) y "export default". Dentro: un <form onSubmit={guardar}> con tres inputs y un botón.',
-            'Usa tres estados (o un objeto como en la lección 2), e.preventDefault() al inicio, el if de Number(monto) <= 0 con su aviso y return, y al final onAgregar({...}) más vaciar los campos.',
+            'Usa tres estados (o un objeto como en la lección 2), e.preventDefault() al inicio, el if de Number(monto) <= 0 con su aviso y return, y al final onAgregar({...}) y, para dejar el formulario listo para el siguiente gasto, vacía los tres campos con setX(\'\').',
             'Estructura: useState para descripcion, monto, categoria, error; function guardar(e) { e.preventDefault(); if (Number(monto) <= 0) { setError(\'El monto debe ser mayor que 0\'); return } setError(\'\'); onAgregar({ descripcion, monto: Number(monto), categoria }); vaciar los tres }.',
           ],
           solution: {
