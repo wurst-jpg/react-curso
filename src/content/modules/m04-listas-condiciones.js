@@ -91,7 +91,7 @@ const frutas = ['Manzana', 'Pera', 'Uva']
           id: 'm04-l1-c2',
           title: 'Una pieza por producto',
           instructions:
-            'Crea `/src/components/Producto.jsx`: recibe la prop `nombre` y devuelve un `<li>` con ese nombre. En `App.jsx`, usa `map` para dibujar un `<Producto />` por cada elemento de la lista (Arroz, Café, Azúcar, Sal), sin olvidar `key`.',
+            'Crea `/src/components/Producto.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Producto.jsx`): recibe la prop `nombre` y devuelve un `<li>` con ese nombre. En `App.jsx`, usa `map` para dibujar un `<Producto />` por cada elemento de la lista (Arroz, Café, Azúcar, Sal), sin olvidar `key`.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -109,7 +109,7 @@ const frutas = ['Manzana', 'Pera', 'Uva']
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea el archivo Producto.jsx dentro de /src/components/ con una función que devuelva <li>{nombre}</li>.',
+            'Pulsa Nuevo archivo y en la casilla Nombre del archivo escribe components/Producto.jsx. Dentro, una función que devuelva <li>{nombre}</li>.',
             'En App.jsx importa Producto y dentro de map devuelve <Producto key={...} nombre={...} />. La key va en lo que devuelve map.',
             '{compras.map((p) => (<Producto key={p} nombre={p} />))} e import Producto from \'./components/Producto.jsx\'.',
           ],
@@ -146,6 +146,7 @@ export default function App() {
               label: 'App.jsx importa Producto',
               message: "Falta import Producto from './components/Producto.jsx' en App.jsx.",
             },
+            { type: 'file-includes', path: '/src/App.jsx', pattern: '<Producto\\b', label: 'App.jsx usa <Producto />', message: 'Usa <Producto ... /> dentro de map.' },
             { type: 'file-includes', path: '/src/App.jsx', pattern: 'key\\s*=\\s*\\{', label: 'Pones key a cada elemento', message: 'Falta key={...} en el elemento que devuelve map.' },
             { type: 'role', role: 'listitem', min: 4, label: 'Se ven 4 elementos de lista', message: 'Debe haber 4 <li>, uno por producto.' },
             { type: 'text', match: 'Azúcar', label: 'Se ve "Azúcar"', message: 'Debe verse cada producto, incluido "Azúcar".' },
@@ -231,7 +232,7 @@ Evita usar la posición (\`index\`) como key si la lista puede cambiar de orden 
           },
           checks: [
             LINT,
-            { type: 'file-includes', path: '/src/App.jsx', pattern: 'key\\s*=\\s*\\{\\s*gasto\\.id\\s*\\}|key\\s*=\\s*\\{\\s*\\w+\\.id\\s*\\}', label: 'Usas el id como key', message: 'Pon key={gasto.id} en el <li>.' },
+            { type: 'file-includes', path: '/src/App.jsx', pattern: 'key\\s*=\\s*\\{\\s*(\\w+\\.)?id\\s*\\}', label: 'Usas el id como key', message: 'Pon key={gasto.id} en el <li>.' },
             { type: 'role', role: 'listitem', min: 3, label: 'Se ven 3 elementos de lista', message: 'Debe haber 3 <li>, uno por gasto.' },
             { type: 'text', match: 'Café: 35 pesos', label: 'Se ve "Café: 35 pesos"', message: 'Cada gasto debe verse como "Café: 35 pesos".' },
             { type: 'text', match: 'Cine: 120 pesos', label: 'Se ve "Cine: 120 pesos"', message: 'Cada gasto debe verse como "Cine: 120 pesos".' },
@@ -242,7 +243,7 @@ Evita usar la posición (\`index\`) como key si la lista puede cambiar de orden 
           id: 'm04-l2-c2',
           title: 'El gasto como pieza',
           instructions:
-            'Crea `/src/components/Gasto.jsx`: recibe `descripcion` y `monto` y devuelve un `<li>` que diga **Café: 35 pesos**. En `App.jsx`, dibuja un `<Gasto />` por gasto usando `map` y el `id` como `key`.',
+            'Crea `/src/components/Gasto.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Gasto.jsx`): recibe `descripcion` y `monto` y devuelve un `<li>` que diga **Café: 35 pesos**. En `App.jsx`, dibuja un `<Gasto />` por gasto usando `map` y el `id` como `key`.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -309,6 +310,7 @@ export default function App() {
               label: 'App.jsx importa Gasto',
               message: "Falta import Gasto from './components/Gasto.jsx' en App.jsx.",
             },
+            { type: 'file-includes', path: '/src/App.jsx', pattern: '<Gasto\\b', label: 'App.jsx usa <Gasto />', message: 'Usa <Gasto ... /> dentro de map.' },
             { type: 'file-includes', path: '/src/App.jsx', pattern: 'key\\s*=\\s*\\{', label: 'Pones key a cada gasto', message: 'Falta key={gasto.id} en <Gasto />.' },
             { type: 'role', role: 'listitem', min: 3, label: 'Se ven 3 elementos de lista', message: 'Debe haber 3 <li>, uno por gasto.' },
             { type: 'text', match: 'Pan: 18 pesos', label: 'Se ve "Pan: 18 pesos"', message: 'Cada gasto debe verse como "Pan: 18 pesos".' },
@@ -397,7 +399,7 @@ export default function App() {
           id: 'm04-l3-c2',
           title: 'Aviso de lista vacía',
           instructions:
-            'La lista tiene un botón **Vaciar lista** que la deja sin elementos. Cuando no haya elementos, debe aparecer el mensaje **No hay elementos**. Usa `&&` con `compras.length === 0`.',
+            'La lista tiene un botón **Vaciar lista** que la deja sin elementos. Cuando no haya elementos, debe aparecer el mensaje **No hay elementos** en un párrafo `<p>`. Usa `&&` con `compras.length === 0`.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'
@@ -449,6 +451,7 @@ export default function App() {
           checks: [
             LINT,
             { type: 'text', match: 'Leche', label: 'Al inicio se ve la lista con "Leche"', message: 'Al inicio debe seguir viéndose la lista.' },
+            { type: 'count', selector: 'p', max: 0, label: 'Con productos no se ve el aviso', message: 'El aviso solo debe verse cuando la lista esté vacía: usa compras.length === 0 && …' },
             {
               type: 'interaction',
               steps: [{ action: 'click', role: 'button', name: 'Vaciar lista' }],
@@ -608,13 +611,13 @@ export default function App() {
       title: 'Una lista que cambia',
       explanation: `Las listas del estado cambian: se agregan y se quitan cosas. La regla de oro es la misma de siempre: **nunca modifiques el arreglo; entrégale a React uno nuevo**.
 
-- Agregar: copia todo y añade uno al final con los tres puntos (\`...\`):
+- Agregar: copia todo y añade uno al final con los tres puntos (\`...\`). Para el \`id\` del nuevo puedes usar \`Date.now()\`: da un número distinto cada vez (la hora actual en milisegundos) y sirve como id único. Ojo: \`compras.length + 1\` puede repetir ids después de borrar elementos.
 
 \`\`\`jsx
 setCompras([...compras, nuevo])
 \`\`\`
 
-- Quitar: \`filter\` se queda solo con los que cumplen una condición. Para quitar el de cierto \`id\`, te quedas con los que **no** tienen ese id:
+- Quitar: \`filter\` es como un colador: deja pasar solo los que cumplen una condición. Para quitar el de cierto \`id\`, te quedas con los que **no** tienen ese id (\`!==\` significa "es distinto de"):
 
 \`\`\`jsx
 setCompras(compras.filter((c) => c.id !== id))
@@ -778,7 +781,7 @@ export default function App() {
             {
               type: 'interaction',
               steps: [{ action: 'click', role: 'button', name: 'Quitar' }],
-              expect: { type: 'count', selector: 'li', max: 2 },
+              expect: { type: 'count', selector: 'li', min: 2, max: 2 },
               label: 'Al pulsar "Quitar" queda un producto menos',
               message: 'quitar debe hacer setCompras(compras.filter(...)).',
             },
@@ -789,7 +792,7 @@ export default function App() {
           id: 'm04-l5-c3',
           title: 'Mi lista de gastos',
           instructions:
-            'Reúne todo. En `App.jsx` guarda en el estado dos gastos iniciales: **Café** de 35 y **Renta** de 800 (cada uno con `id`, `descripcion` y `monto`). Crea `/src/components/Gasto.jsx` (un `<li>` con **Café: 35 pesos**, la etiqueta **Gasto grande** si el monto es 100 o más y **Gasto pequeño** si no, y un botón **Quitar**). `App` debe tener un botón **Agregar gasto** que añada un gasto nuevo de 50 pesos, y mostrar **No hay gastos** cuando no quede ninguno.',
+            'Reúne todo. En `App.jsx` guarda en el estado dos gastos iniciales: **Café** de 35 y **Renta** de 800 (cada uno con `id`, `descripcion` y `monto`). Crea `/src/components/Gasto.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Gasto.jsx`; un `<li>` con **Café: 35 pesos**, la etiqueta **Gasto grande** si el monto es 100 o más y **Gasto pequeño** si no, y un botón **Quitar**). `App` debe tener un botón **Agregar gasto** que añada un gasto nuevo de **50 pesos** (usa `Date.now()` como `id`: no repite números, a diferencia de `length + 1` tras borrar), y mostrar **No hay gastos** cuando no quede ninguno.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -861,23 +864,25 @@ export default function App() {
             { type: 'text', match: 'Café: 35 pesos', label: 'Se ve "Café: 35 pesos"', message: 'Cada gasto debe verse como "Café: 35 pesos".' },
             { type: 'text', match: 'Gasto grande', label: 'La Renta es "Gasto grande"', message: 'Monto de 100 o más: "Gasto grande".' },
             { type: 'text', match: 'Gasto pequeño', label: 'El Café es "Gasto pequeño"', message: 'Monto menor a 100: "Gasto pequeño".' },
-            {
-              type: 'interaction',
-              steps: [{ action: 'click', role: 'button', name: 'Agregar gasto' }],
-              expect: { type: 'role', role: 'listitem', min: 3 },
-              label: 'Agregar gasto suma un elemento (3 en total)',
-              message: 'Agregar debe hacer setGastos([...gastos, nuevo]).',
-            },
+            // Los checks de una misma comprobación comparten la página y corren en orden:
+            // primero se quitan los 2 gastos iniciales, luego se agrega uno.
+            { type: 'file-includes', path: '/src/App.jsx', pattern: '<Gasto\\b', label: 'App.jsx usa <Gasto />', message: 'Usa <Gasto ... /> dentro de map.' },
             {
               type: 'interaction',
               steps: [
                 { action: 'click', role: 'button', name: 'Quitar' },
                 { action: 'click', role: 'button', name: 'Quitar' },
-                { action: 'click', role: 'button', name: 'Quitar' },
               ],
               expect: { type: 'text', match: 'No hay gastos' },
-              label: 'Al quitar todos aparece "No hay gastos"',
+              label: 'Al quitar los 2 gastos aparece "No hay gastos"',
               message: 'Quitar debe usar filter, y falta {gastos.length === 0 && <p>No hay gastos</p>}.',
+            },
+            {
+              type: 'interaction',
+              steps: [{ action: 'click', role: 'button', name: 'Agregar gasto' }],
+              expect: { type: 'text', match: '50 pesos' },
+              label: 'Agregar gasto suma uno de 50 pesos',
+              message: 'Agregar debe hacer setGastos([...gastos, nuevo]) con monto 50.',
             },
           ],
           xp: 30,

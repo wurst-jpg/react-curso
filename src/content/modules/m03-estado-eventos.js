@@ -22,8 +22,13 @@ const modulo = {
 \`\`\`jsx
 import { useState } from 'react'
 
-const [goles, setGoles] = useState(0)
+function Marcador() {
+  const [goles, setGoles] = useState(0)
+  // ...
+}
 \`\`\`
+
+El \`import\` va arriba del archivo, pero la línea con \`useState(0)\` va **dentro** del componente, nunca suelta al inicio del archivo.
 
 - \`goles\` es el valor actual (empieza en 0).
 - \`setGoles\` es la función para cambiarlo. Es la **única** forma correcta: no escribas \`goles = 5\`.
@@ -33,7 +38,9 @@ Para reaccionar a un clic se usa \`onClick\` en el botón, y se le da una funci�
 
 \`\`\`jsx
 <button onClick={() => setGoles(goles + 1)}>Gol</button>
-\`\`\``,
+\`\`\`
+
+\`() => ...\` es una función corta y sin nombre: a la izquierda de la flecha lo que recibe, a la derecha lo que hace. \`onClick={() => setGoles(goles + 1)}\` se lee "cuando hagan clic, suma un gol".`,
       challenges: [
         {
           id: 'm03-l1-c1',
@@ -192,7 +199,7 @@ function encender() {
 <button onClick={encender}>Encender</button>
 \`\`\`
 
-Cuidado: \`onClick={encender()}\` ejecuta la función al dibujar la página, no al hacer clic. Es un tropiezo clásico. Entrega la función, no su resultado.`,
+Cuidado: \`onClick={encender()}\` ejecuta la función al dibujar la página, no al hacer clic. Es como la diferencia entre darle a alguien tu número de teléfono (\`onClick={encender}\`: llama cuando haga falta) y llamarlo ya mismo (\`encender()\`). Entrega la función, no su resultado.`,
       challenges: [
         {
           id: 'm03-l2-c1',
@@ -256,7 +263,7 @@ export default function App() {
           id: 'm03-l2-c2',
           title: 'Arregla el clic',
           instructions:
-            'Este botón rompe la página: cada clic debe sumar 5 puntos, y la página debe mostrar **Puntos: 0** al inicio. Encuentra el error y arréglalo. Después de dos clics en **Ganar puntos** se leerá **Puntos: 10**.',
+            'Este botón rompe la página: cada clic debe sumar 5 puntos, y la página debe mostrar **Puntos: 0** al inicio. Hay dos errores: encuéntralos y arréglalos. Después de dos clics en **Ganar puntos** se leerá **Puntos: 10**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import { useState } from 'react'
@@ -462,7 +469,7 @@ Y en \`App.jsx\` puedes poner \`<Contador />\` dos veces: cada una cuenta por su
           id: 'm03-l4-c1',
           title: 'Dos contadores independientes',
           instructions:
-            'Crea el archivo `/src/components/Contador.jsx` con un componente que muestre **Cuenta: 0** y un botón **Sumar** que suba la cuenta de 1 en 1. En `App.jsx` impórtalo y úsalo dos veces. Al pulsar el primer **Sumar**, solo el primer contador debe subir.',
+            'Crea el archivo `/src/components/Contador.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Contador.jsx`) con un componente que muestre **Cuenta: 0** y un botón **Sumar** que suba la cuenta de 1 en 1. En `App.jsx` impórtalo y úsalo dos veces. Al pulsar el primer **Sumar**, solo el primer contador debe subir.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -476,7 +483,7 @@ Y en \`App.jsx\` puedes poner \`<Contador />\` dos veces: cada una cuenta por su
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Crea la carpeta y el archivo con el botón de nuevo archivo: /src/components/Contador.jsx.',
+            'Pulsa Nuevo archivo y en la casilla Nombre del archivo escribe components/Contador.jsx (la carpeta se crea sola).',
             'En Contador.jsx: importa useState, crea el estado y devuelve un <div> con <p>Cuenta: {cuenta}</p> y el botón. Ofrécelo con export default.',
             'En App.jsx: import Contador from \'./components/Contador.jsx\' y devuelve <div><Contador /><Contador /></div>.',
           ],
@@ -606,6 +613,7 @@ export default function App() {
           },
           checks: [
             { type: 'lint-clean', label: 'ESLint no encuentra errores' },
+            { type: 'file-includes', path: '/src/components/Contador.jsx', pattern: 'paso', label: 'Contador.jsx usa la prop paso', message: 'Contador debe recibir { paso = 1 } y usarla.' },
             { type: 'role', role: 'button', name: 'Sumar 5', label: 'Hay un botón "Sumar 5"', message: 'Falta un contador con paso={5}; su botón debe decir "Sumar 5".' },
             {
               type: 'interaction',
@@ -715,7 +723,7 @@ export default function App() {
           id: 'm03-l5-c2',
           title: 'Mini carrito',
           instructions:
-            'Construye un carrito con un producto que cuesta 12 pesos. `App.jsx` guarda la `cantidad` (empieza en 1). Crea `/src/components/Cantidad.jsx` con los botones **Más** y **Menos** (reciben las funciones por props) y `/src/components/Resumen.jsx` que muestre **Total: 12 pesos** (cantidad × 12). Con 3 unidades: **Total: 36 pesos**. Que la cantidad no baje de 1.',
+            'Construye un carrito con un producto que cuesta 12 pesos. `App.jsx` guarda la `cantidad` (empieza en 1). Crea `/src/components/Cantidad.jsx` (pulsa **Nuevo archivo** y en **Nombre del archivo** escribe `components/Cantidad.jsx`) con los botones **Más** y **Menos** (reciben las funciones por props) y `/src/components/Resumen.jsx` (igual: **Nuevo archivo** y `components/Resumen.jsx`) que muestre **Total: 12 pesos** (cantidad × 12). Con 3 unidades: **Total: 36 pesos**. Que la cantidad no baje de 1.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -773,6 +781,8 @@ export default function App() {
             { type: 'lint-clean', label: 'ESLint no encuentra errores' },
             { type: 'file-exists', pattern: '^/src/components/Cantidad\\.jsx$', label: 'Existe Cantidad.jsx', message: 'Falta crear /src/components/Cantidad.jsx.' },
             { type: 'file-exists', pattern: '^/src/components/Resumen\\.jsx$', label: 'Existe Resumen.jsx', message: 'Falta crear /src/components/Resumen.jsx.' },
+            { type: 'file-includes', path: '/src/App.jsx', pattern: '<Cantidad\\b', label: 'App.jsx usa <Cantidad />', message: 'Usa <Cantidad ... /> en App.jsx.' },
+            { type: 'file-includes', path: '/src/App.jsx', pattern: '<Resumen\\b', label: 'App.jsx usa <Resumen />', message: 'Usa <Resumen ... /> en App.jsx.' },
             { type: 'text', match: 'Total: 12 pesos', label: 'Al inicio dice "Total: 12 pesos"', message: 'Con cantidad 1 debe verse "Total: 12 pesos".' },
             {
               type: 'interaction',
