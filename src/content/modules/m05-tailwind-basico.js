@@ -60,7 +60,7 @@ Puedes poner varias clases separadas por un espacio: \`className="bg-yellow-100 
             {
               type: 'class',
               selector: 'h1',
-              pattern: '^text-[a-z]+-\\d+$',
+              pattern: '^text-([a-z]+-\\d+|white|black)$',
               label: 'El título tiene un color de letra (text-color-número)',
               message: 'Añade className="text-green-600" (o otro color) a la etiqueta <h1>.',
             },
@@ -163,14 +163,14 @@ El número es la cantidad: \`1\` es poquito, \`4\` es normal, \`8\` es bastante.
             {
               type: 'class',
               selector: 'button',
-              pattern: '^px-\\d+$',
+              pattern: '^px-\\d+(\\.5)?$',
               label: 'El botón tiene espacio a los lados (px-)',
               message: 'Añade una clase como px-4 al className del botón.',
             },
             {
               type: 'class',
               selector: 'button',
-              pattern: '^py-\\d+$',
+              pattern: '^py-\\d+(\\.5)?$',
               label: 'El botón tiene espacio arriba y abajo (py-)',
               message: 'Añade una clase como py-2 al className del botón.',
             },
@@ -230,7 +230,7 @@ El número es la cantidad: \`1\` es poquito, \`4\` es normal, \`8\` es bastante.
             {
               type: 'class',
               selector: 'div',
-              pattern: '^p-\\d+$',
+              pattern: '^p-\\d+(\\.5)?$',
               label: 'La tarjeta tiene espacio interno (p-)',
               message: 'Añade p-4 al className del div.',
             },
@@ -331,7 +331,7 @@ El número es la cantidad: \`1\` es poquito, \`4\` es normal, \`8\` es bastante.
             {
               type: 'class',
               selector: 'p',
-              pattern: '^text-gray-\\d+$',
+              pattern: '^text-(gray|slate|zinc|neutral|stone)-\\d+$',
               label: 'El párrafo es gris (text-gray-...)',
               message: 'Añade text-gray-500 al className del <p>.',
             },
@@ -377,7 +377,7 @@ El número es la cantidad: \`1\` es poquito, \`4\` es normal, \`8\` es bastante.
             {
               type: 'class',
               selector: 'div',
-              pattern: '^border$',
+              pattern: '^border(-\\d+)?$',
               label: 'La tarjeta tiene borde (border)',
               message: 'Añade la clase border al div.',
             },
@@ -424,7 +424,7 @@ En Tailwind le pones **\`hover:\`** delante de cualquier clase y solo se aplica 
 - \`transition\`: hace que el cambio sea suave en vez de brusco.
 - \`cursor-pointer\`: muestra la manito del ratón.
 
-Ahora ya puedes armar una pieza completa. Un componente puede recibir su estilo igual que cualquier otro texto: todo va en su \`className\`.`,
+Ahora ya puedes armar una pieza completa. Si el elemento está dentro de un componente, abres el archivo del componente y le pones el \`className\` ahí.`,
       challenges: [
         {
           id: 'm05-l4-c1',
@@ -524,6 +524,7 @@ export default function App() {
 `,
           },
           checks: [
+            { type: 'lint-clean', label: 'ESLint no encuentra errores' },
             { type: 'role', role: 'heading', name: 'Café', label: 'Se ve el gasto "Café"' },
             { type: 'role', role: 'button', name: 'Borrar', label: 'Se ve el botón "Borrar"' },
             {
@@ -543,7 +544,7 @@ export default function App() {
             {
               type: 'class',
               selector: 'article',
-              pattern: '^border$',
+              pattern: '^border(-\\d+)?$',
               label: 'La tarjeta tiene borde',
               message: 'Añade border al className del <article>.',
             },

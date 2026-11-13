@@ -140,7 +140,9 @@ const modulo = {
 `,
           },
           checks: [
-            { type: 'text', match: 'Almuerzo', label: 'Se ven los tres gastos' },
+            { type: 'text', match: 'Café', label: 'Se ve "Café"' },
+            { type: 'text', match: 'Bus', label: 'Se ve "Bus"' },
+            { type: 'text', match: 'Almuerzo', label: 'Se ve "Almuerzo"' },
             {
               type: 'class',
               selector: 'div',
@@ -356,7 +358,7 @@ Para probarlo, cambia el ancho de la vista previa o de tu ventana. Aquí solo co
           id: 'm06-l3-c1',
           title: 'Columnas que se adaptan',
           instructions:
-            'Haz la cuadrícula responsive: en celular, **1 columna** (`grid-cols-1`) y desde pantallas medianas, **3 columnas** (`md:grid-cols-3`). Conserva `grid` y `gap-4`.',
+            'Haz la cuadrícula responsive: en celular, 1 columna (`grid-cols-1`) y desde pantallas medianas, 3 columnas (`md:grid-cols-3`). Conserva `grid` y `gap-4`. Si la vista previa es angosta verás 1 columna; es lo esperado (las clases `md:` se activan en pantallas anchas).',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import Tarjeta from './components/Tarjeta.jsx'
@@ -416,7 +418,7 @@ export default function App() {
           id: 'm06-l3-c2',
           title: 'Cabecera responsive',
           instructions:
-            'Arma la cabecera: en celular, el título y el botón van **uno debajo del otro** (`flex flex-col gap-2`); desde pantallas medianas, **en una fila** con extremos (`md:flex-row` y `md:justify-between`). El botón debe decir **Nuevo gasto**.',
+            'Arma la cabecera: en celular, el título y el botón van uno debajo del otro (`flex flex-col gap-2`); desde pantallas medianas, en una fila con extremos (`md:flex-row` y `md:justify-between`). El botón debe decir **Nuevo gasto**. Si la vista previa es angosta verás la versión de celular; es lo esperado (las clases `md:` se activan en pantallas anchas).',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -501,7 +503,7 @@ Regla útil: cada vez que pongas un color de fondo, piensa también cómo se ver
           id: 'm06-l4-c1',
           title: 'Una tarjeta que se oscurece',
           instructions:
-            'Esta tarjeta es siempre blanca. Haz que en modo oscuro tenga fondo oscuro y letras claras: añade `dark:bg-slate-800` al fondo y `dark:text-white` al texto. Deja las clases normales.',
+            'Esta tarjeta es siempre blanca. Haz que en modo oscuro tenga fondo oscuro y letras claras: añade `dark:bg-slate-800` al fondo y `dark:text-white` al texto. Deja las clases normales. En la vista previa no verás ningún cambio a menos que tu computador (o tu navegador) esté en modo oscuro; es normal, no está roto.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -543,7 +545,7 @@ Regla útil: cada vez que pongas un color de fondo, piensa también cómo se ver
             {
               type: 'class',
               selector: 'div',
-              pattern: '^dark:bg-[a-z]+-\\d+$',
+              pattern: '^dark:bg-',
               label: 'En modo oscuro cambia el fondo (dark:bg-)',
               message: 'Añade dark:bg-slate-800 al className del div.',
             },
@@ -561,14 +563,14 @@ Regla útil: cada vez que pongas un color de fondo, piensa también cómo se ver
           id: 'm06-l4-c2',
           title: 'Panel de resumen completo',
           instructions:
-            'Junta todo en `/src/components/Resumen.jsx`. Ya muestra tres datos. Déjalo así:\n\n- El contenedor (`section`): `grid`, `grid-cols-1` y `md:grid-cols-3`, `gap-4`.\n- Cada dato (`div`): `p-4`, `rounded-xl`, `bg-white` con `dark:bg-slate-800`, y `hover:shadow-lg`.\n- Dentro de cada dato, una fila `flex` con `justify-between` (nombre a la izquierda, monto a la derecha).\n\nEl texto debe seguir mostrando **Comida**, **Transporte** y **Ocio**.',
+            'Junta todo en `/src/components/Resumen.jsx`. Ya muestra tres datos. Déjalo así:\n\n- El contenedor (`section`): `grid`, `grid-cols-1` y `md:grid-cols-3`, `gap-4`.\n- Cada dato (`div`): `p-4`, `rounded-xl`, `bg-white` con `dark:bg-slate-800`, y `hover:shadow-lg`.\n- Dentro de cada dato, una fila `flex` con `justify-between` (nombre a la izquierda, monto a la derecha).\n\nEl texto debe seguir mostrando **Comida**, **Transporte** y **Ocio**. En la vista previa no verás el modo oscuro a menos que tu computador (o tu navegador) esté en modo oscuro; es normal, no está roto.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `import Resumen from './components/Resumen.jsx'
 
 export default function App() {
   return (
-    <main className="p-6 bg-gray-100 dark:bg-slate-900 min-h-screen">
+    <main className="p-6 bg-gray-100 dark:bg-slate-900 dark:text-white min-h-screen">
       <Resumen />
     </main>
   )
@@ -622,6 +624,7 @@ export default function App() {
 `,
           },
           checks: [
+            { type: 'lint-clean', label: 'ESLint no encuentra errores' },
             { type: 'text', match: 'Comida', label: 'Se ve "Comida"' },
             { type: 'text', match: 'Transporte', label: 'Se ve "Transporte"' },
             { type: 'text', match: 'Ocio', label: 'Se ve "Ocio"' },
@@ -648,37 +651,37 @@ export default function App() {
             },
             {
               type: 'class',
-              selector: 'section > div',
+              selector: 'section div',
               pattern: '^flex$',
-              label: 'Cada dato usa flex',
+              label: 'Los datos usan flex',
               message: 'Añade flex a cada div dentro del <section>.',
             },
             {
               type: 'class',
-              selector: 'section > div',
+              selector: 'section div',
               pattern: '^justify-between$',
-              label: 'Nombre y monto quedan a los extremos (justify-between)',
+              label: 'Los datos separan nombre y monto (justify-between)',
               message: 'Añade justify-between a cada div dentro del <section>.',
             },
             {
               type: 'class',
-              selector: 'section > div',
+              selector: 'section div',
               pattern: '^p-\\d+$',
-              label: 'Cada dato tiene espacio interno (p-)',
+              label: 'Los datos tienen espacio interno (p-)',
               message: 'Añade p-4 a cada div dentro del <section>.',
             },
             {
               type: 'class',
-              selector: 'section > div',
+              selector: 'section div',
               pattern: '^dark:bg-[a-z]+-\\d+$',
-              label: 'Cada dato tiene fondo para modo oscuro (dark:bg-)',
+              label: 'Los datos tienen fondo para modo oscuro (dark:bg-)',
               message: 'Añade dark:bg-slate-800 a cada div dentro del <section>.',
             },
             {
               type: 'class',
-              selector: 'section > div',
+              selector: 'section div',
               pattern: '^hover:shadow',
-              label: 'Cada dato reacciona al ratón (hover:shadow-)',
+              label: 'Los datos reaccionan al ratón (hover:shadow-)',
               message: 'Añade hover:shadow-lg a cada div dentro del <section>.',
             },
           ],
