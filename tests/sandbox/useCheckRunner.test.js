@@ -174,7 +174,7 @@ test('si la vista previa no vuelve a avisar en 20000 ms, falla con un mensaje cl
   expect(settled).toBe(false)
 
   await act(() => vi.advanceTimersByTimeAsync(1))
-  const msg = 'La vista previa no terminó de recargarse. Espera un momento y pulsa "Comprobar" otra vez.'
+  const msg = 'La vista previa no terminó de cargar. Revisa si hay errores en tu código (mira la vista previa) y pulsa "Comprobar" otra vez.'
   expect(RELOAD_TIMEOUT_MESSAGE).toBe(msg)
   await expect(promise).resolves.toEqual([
     { index: 0, label: 'Dice hola', status: 'error', message: msg },

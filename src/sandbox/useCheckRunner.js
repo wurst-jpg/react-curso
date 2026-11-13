@@ -4,7 +4,7 @@ const SOURCE = 'curso-react'
 
 export const TIMEOUT_MESSAGE = 'La vista previa no respondió. Revisa si hay errores en tu código.'
 export const RELOAD_TIMEOUT_MESSAGE =
-  'La vista previa no terminó de recargarse. Espera un momento y pulsa "Comprobar" otra vez.'
+  'La vista previa no terminó de cargar. Revisa si hay errores en tu código (mira la vista previa) y pulsa "Comprobar" otra vez.'
 const SUPERSEDED_MESSAGE = 'Se empezó una comprobación nueva.'
 
 // Tras enviar las comprobaciones, el arnés puede tardar: 300 ms de pintado + hasta ~2 s de
