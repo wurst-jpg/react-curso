@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* La vista previa del alumno se ve sobre fondo blanco, como una página normal,
+   aunque el editor use el tema oscuro de Sandpack. */
+.preview-surface .sp-preview-container,
+.preview-surface .sp-preview-iframe {
+  color-scheme: light;
+  background-color: #fff;
+}
+
+/* La capa "cargando" de Sandpack muestra sus avisos en inglés; la ocultamos y la página
+   muestra su propio aviso en español ("Preparando la vista previa…"). */
+.preview-surface .sp-loading {
+  display: none;
+}
+
+/* Celebración al superar un reto. Sin movimiento si el sistema pide menos animaciones. */
+@media (prefers-reduced-motion: no-preference) {
+  .celebration {
+    animation: celebration-pop 400ms ease-out;
+  }
+  .celebration-xp {
+    animation: celebration-pop 600ms 200ms ease-out both;
+  }
+  .celebration-confetti {
+    animation: celebration-fall 1400ms ease-in both;
+  }
+}
+
+@keyframes celebration-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes celebration-fall {
+  from {
+    opacity: 1;
+    transform: translateY(-1.5rem);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-confetti {
+    display: none;
+  }
+}
