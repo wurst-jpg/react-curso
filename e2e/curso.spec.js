@@ -41,6 +41,62 @@ test('recorrido del módulo 0: ver solución, comprobar y conservar el XP', asyn
   await expect(page.getByRole('link', { name: /Crea tu primera pieza/ })).toContainText('Disponible')
 })
 
+test('cada Comprobar evalúa la vista previa recién cargada: los clics del alumno no se cuelan', async ({ page }) => {
+  // Un App con estado: el título solo saluda mientras la cuenta está en 0. Si el estado de
+  // los clics del alumno se colara en la comprobación, el reto fallaría injustamente.
+  const app = `import { useState } from 'react'
+export default function App() {
+  const [n, setN] = useState(0)
+  return (
+    <>
+      <h1>{n === 0 ? '¡Hola, React!' : 'Ya no saludo'}</h1>
+      <button onClick={() => setN(n + 1)}>Sumar</button>
+      <p>Cuenta: {n}</p>
+    </>
+  )
+}
+`
+  const main = `import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+`
+  // El código guardado sustituye a todos los archivos del reto, así que van los dos.
+  await page.evaluate(
+    (files) => localStorage.setItem('curso-react:code:v1:m00-l1-c1', JSON.stringify(files)),
+    { '/src/main.jsx': main, '/src/App.jsx': app },
+  )
+  await page.goto('/reto/m00-l1-c1')
+  const vista = page.frameLocator('iframe').first()
+  const titulo = vista.getByRole('heading')
+  await expect(titulo).toHaveText('¡Hola, React!', { timeout: 40_000 })
+  await expect(page.getByText('Preparando la vista previa')).toHaveCount(0)
+
+  const exito = page.getByText('¡Reto superado!')
+  const comprobar = page.getByRole('button', { name: 'Comprobar' })
+  for (let vez = 1; vez <= 2; vez++) {
+    // El alumno juega con su página: el estado ya no cumple el reto.
+    await vista.getByRole('button', { name: 'Sumar' }).click()
+    await expect(titulo).toHaveText('Ya no saludo')
+    await expect(vista.getByText('Cuenta: 1')).toBeVisible()
+
+    const inicio = Date.now()
+    await comprobar.click()
+    await expect(exito).toBeHidden()
+    await expect(exito).toBeVisible({ timeout: 25_000 })
+    console.log(`Comprobar nº ${vez} tardó ${Date.now() - inicio} ms`)
+    // La vista previa quedó como recién cargada y el código del alumno sigue en el editor.
+    await expect(titulo).toHaveText('¡Hola, React!')
+    await expect(vista.getByText('Cuenta: 0')).toBeVisible()
+    await expect(page.locator('.cm-content').first()).toContainText('Ya no saludo')
+  }
+})
+
 test('el código escrito en el editor sobrevive a recargar', async ({ page }) => {
   await page.goto('/reto/m00-l1-c1')
   const editor = page.locator('.cm-content').first()

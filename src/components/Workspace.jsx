@@ -62,7 +62,7 @@ async function runAllChecks(checks, files, run, manualDone) {
 }
 
 export default function Workspace({ challenge, nextChallenge, hintsShown, onRevealHint, onRestart, canCleanStart }) {
-  const { sandpack, listen } = useSandpack()
+  const { sandpack, listen, dispatch } = useSandpack()
   const { progress, complete, viewSolution } = useProgress()
   const files = useMemo(() => editorFiles(sandpack.files), [sandpack.files])
   const paths = Object.keys(files)
@@ -82,8 +82,11 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
 
   const previewRef = useRef(null)
   const previewBoxRef = useRef(null)
+  // Cada "Comprobar" recarga la vista previa (mismo mensaje que su botón de recargar) para que
+  // el estado de clics anteriores no se cuele en la comprobación.
   const { run, ready } = useCheckRunner(
     () => previewRef.current?.getClient?.()?.iframe ?? previewBoxRef.current?.querySelector('iframe') ?? null,
+    { refresh: () => dispatch({ type: 'refresh' }) },
   )
 
   const [results, setResults] = useState(null)
