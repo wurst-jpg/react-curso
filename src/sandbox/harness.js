@@ -6,9 +6,12 @@ export const HARNESS_SOURCE = `import { runDomChecks } from './__runner__.js'
 
 const SOURCE = 'curso-react'
 const PAINT_DELAY_MS = 300
+// Marca de ESTA carga de la página: la página distingue el aviso de la vista previa recién
+// recargada del de la anterior (la ventana del iframe es la misma antes y después de recargar).
+const DOC = typeof performance !== 'undefined' && performance.timeOrigin ? performance.timeOrigin : Date.now()
 
 function send(message) {
-  window.parent.postMessage({ source: SOURCE, ...message }, '*')
+  window.parent.postMessage({ source: SOURCE, doc: DOC, ...message }, '*')
 }
 
 window.addEventListener('message', async (event) => {

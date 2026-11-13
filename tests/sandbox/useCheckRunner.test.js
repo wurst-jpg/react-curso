@@ -121,6 +121,123 @@ test('ignora harness-ready de otra fuente', async () => {
   expect(spy).not.toHaveBeenCalled()
 })
 
+// Cada carga de la página del iframe lleva una marca `doc` (performance.timeOrigin). Tras pedir
+// recargar, solo vale un harness-ready con una marca DISTINTA a la última vista: la página vieja
+// puede seguir mandando mensajes mientras la nueva empieza a cargar.
+test('un harness-ready de la página vieja (mismo doc) tras run() no envía nada; el de la nueva sí', async () => {
+  const { result } = render()
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 1000 })
+  let promise
+  act(() => {
+    promise = result.current.run(checks)
+  })
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 1000 })
+  await Promise.resolve()
+  expect(spy).not.toHaveBeenCalled()
+
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 2000 })
+  await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1))
+  const runId = lastRunId(spy)
+
+  // Resultados de la página vieja (otro doc) se ignoran aunque traigan el runId correcto.
+  let settled = false
+  promise.then(() => (settled = true))
+  sendFrom(iframe.contentWindow, { type: 'check-results', runId, doc: 1000, results: [] })
+  await Promise.resolve()
+  expect(settled).toBe(false)
+
+  const results = [{ index: 0, label: 'Dice hola', status: 'pass' }]
+  sendFrom(iframe.contentWindow, { type: 'check-results', runId, doc: 2000, results })
+  await expect(promise).resolves.toEqual(results)
+})
+
+test('sin ningún harness-ready previo, el primero que llegue vale (doc cualquiera)', async () => {
+  const { result } = render()
+  act(() => {
+    result.current.run(checks)
+  })
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 1000 })
+  await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1))
+})
+
+test('sin función de recarga y con la vista previa ya lista, envía de inmediato', async () => {
+  const { result } = renderHook(() => useCheckRunner(() => iframe))
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 1000 })
+  let promise
+  act(() => {
+    promise = result.current.run(checks)
+  })
+  expect(spy).toHaveBeenCalledTimes(1)
+  const results = [{ index: 0, label: 'Dice hola', status: 'pass' }]
+  sendFrom(iframe.contentWindow, { type: 'check-results', runId: lastRunId(spy), doc: 1000, results })
+  await expect(promise).resolves.toEqual(results)
+})
+
+test('si Sandpack avisa de un error de compilación/ejecución mientras recarga, termina ya con el mensaje de recarga', async () => {
+  vi.useFakeTimers()
+  const callbacks = []
+  const unsubscribe = vi.fn()
+  const listen = vi.fn((cb) => {
+    callbacks.push(cb)
+    return unsubscribe
+  })
+  const { result, unmount } = renderHook(() => useCheckRunner(() => iframe, { refresh, listen }))
+  // Un error anterior a run() no afecta.
+  act(() => callbacks.forEach((cb) => cb({ type: 'action', action: 'show-error', message: 'viejo' })))
+  let promise
+  act(() => {
+    promise = result.current.run(checks)
+  })
+  act(() => callbacks.forEach((cb) => cb({ type: 'done', compilatonError: false })))
+  await act(() => vi.advanceTimersByTimeAsync(100))
+  let settled = null
+  promise.then((r) => (settled = r))
+  await act(() => vi.advanceTimersByTimeAsync(0))
+  expect(settled).toBeNull()
+
+  act(() => callbacks.forEach((cb) => cb({ type: 'action', action: 'show-error', message: 'SyntaxError' })))
+  await act(() => vi.advanceTimersByTimeAsync(0))
+  expect(settled.map((r) => r.message)).toEqual([RELOAD_TIMEOUT_MESSAGE, RELOAD_TIMEOUT_MESSAGE])
+  expect(spy).not.toHaveBeenCalled()
+
+  // Con las comprobaciones ya enviadas, un error de ejecución no corta la espera de resultados.
+  act(() => {
+    promise = result.current.run(checks)
+  })
+  sendFrom(iframe.contentWindow, { type: 'harness-ready', doc: 3000 })
+  expect(spy).toHaveBeenCalledTimes(1)
+  settled = null
+  promise.then((r) => (settled = r))
+  act(() => callbacks.forEach((cb) => cb({ type: 'action', action: 'show-error', message: 'en caliente' })))
+  await act(() => vi.advanceTimersByTimeAsync(0))
+  expect(settled).toBeNull()
+
+  unmount()
+  expect(unsubscribe).toHaveBeenCalled()
+})
+
+test('desmontar durante una ejecución quita el listener, limpia el temporizador y resuelve', async () => {
+  vi.useFakeTimers()
+  const add = vi.spyOn(window, 'addEventListener')
+  const remove = vi.spyOn(window, 'removeEventListener')
+  const clear = vi.spyOn(globalThis, 'clearTimeout')
+  const { result, unmount } = render()
+  const onMessage = add.mock.calls.find(([type]) => type === 'message')[1]
+  let promise
+  act(() => {
+    promise = result.current.run(checks)
+  })
+  clear.mockClear()
+  unmount()
+  expect(remove).toHaveBeenCalledWith('message', onMessage)
+  expect(clear).toHaveBeenCalled()
+  expect((await promise).map((r) => r.status)).toEqual(['error', 'error'])
+  await act(() => vi.advanceTimersByTimeAsync(30000)) // no queda nada pendiente que explote
+  add.mockRestore()
+  remove.mockRestore()
+  clear.mockRestore()
+})
+
 test('funciona sin función de recarga (solo espera el siguiente harness-ready)', async () => {
   const { result } = renderHook(() => useCheckRunner(() => iframe))
   let promise

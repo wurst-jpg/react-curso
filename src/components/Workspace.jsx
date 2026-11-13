@@ -86,8 +86,10 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   // el estado de clics anteriores no se cuele en la comprobación.
   const { run, ready } = useCheckRunner(
     () => previewRef.current?.getClient?.()?.iframe ?? previewBoxRef.current?.querySelector('iframe') ?? null,
-    { refresh: () => dispatch({ type: 'refresh' }) },
+    { refresh: () => dispatch({ type: 'refresh' }), listen },
   )
+  // Solo la última comprobación lanzada escribe resultados (por si el botón se pulsa dos veces).
+  const checkSeqRef = useRef(0)
 
   const [results, setResults] = useState(null)
   const [checking, setChecking] = useState(false)
@@ -173,9 +175,12 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
       setCheckError(PREVIEW_PREPARING_MESSAGE)
       return
     }
+    const seq = ++checkSeqRef.current
+    const latest = () => seq === checkSeqRef.current
     setChecking(true)
     try {
       const all = await runAllChecks(challenge.checks, files, run, manualDone)
+      if (!latest()) return
       setResults(all)
       if (summarizeResults(all).passed) {
         const gained = completeChallenge(progress, challenge).xp - progress.xp
@@ -183,10 +188,11 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
         setCelebration({ xp: gained })
       }
     } catch {
+      if (!latest()) return
       setResults(null)
       setCheckError('Algo salió mal al comprobar tu reto. Espera un momento y pulsa "Comprobar" otra vez.')
     } finally {
-      setChecking(false)
+      if (latest()) setChecking(false)
     }
   }
 

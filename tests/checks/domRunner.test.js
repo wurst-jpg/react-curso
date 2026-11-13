@@ -279,6 +279,60 @@ describe('contenido que tarda en aparecer (datos cargados al montar)', () => {
   })
 })
 
+describe('presupuesto de tiempo acotado', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+  const later = (ms, html) => setTimeout(() => (root.innerHTML = html), ms)
+  const start = (checks, options) => {
+    let settled = null
+    runDomChecks(checks, root, options).then((r) => (settled = r))
+    return () => settled
+  }
+  const click = { action: 'click', role: 'button', name: 'Ok' }
+
+  it('los pasos y el expect de una interacción comparten UN plazo (no uno por paso)', async () => {
+    root.innerHTML = '<p>Cargando…</p>'
+    later(1500, '<button>Ok</button><p>nada</p>')
+    const result = start([{ type: 'interaction', label: 'i', steps: [click, click, click], expect: { type: 'text', match: 'Listo' } }])
+    await vi.advanceTimersByTimeAsync(2400)
+    expect(result()).not.toBeNull()
+    expect(result()[0]).toMatchObject({ status: 'fail', message: 'Hice lo que se pide, pero no encontré el texto "Listo" en tu página.' })
+  })
+
+  it('toda la tanda se corta a `totalMs`: lo que queda se evalúa una vez sin reintentos', async () => {
+    root.innerHTML = ''
+    const many = Array.from({ length: 6 }, (_, i) => ({
+      type: 'interaction',
+      label: `i${i}`,
+      steps: [click],
+      expect: { type: 'text', match: 'x' },
+    }))
+    const result = start([...many, { type: 'text', label: 't', match: 'y' }], { settleMs: 2000, totalMs: 3000 })
+    await vi.advanceTimersByTimeAsync(3300)
+    expect(result()).not.toBeNull()
+    expect(result().map((r) => r.status)).toEqual(['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail'])
+  })
+
+  it('con los valores por defecto, 5 interacciones con 13 pasos fallidos terminan en menos de 11 s', async () => {
+    root.innerHTML = ''
+    const inter = (n) => ({ type: 'interaction', label: 'i', steps: Array(n).fill(click), expect: { type: 'text', match: 'x' } })
+    const result = start([inter(3), inter(3), inter(3), inter(2), inter(2)])
+    await vi.advanceTimersByTimeAsync(11000)
+    expect(result()).not.toBeNull()
+    expect(result()).toHaveLength(5)
+  })
+
+  it('reintentar el expect de una interacción nunca vuelve a hacer clic', async () => {
+    root.innerHTML = '<button>Ok</button><p>nada</p>'
+    const onClick = vi.fn()
+    root.querySelector('button').addEventListener('click', onClick)
+    const result = start([{ type: 'interaction', label: 'i', steps: [click], expect: { type: 'text', match: 'Listo' } }])
+    await vi.advanceTimersByTimeAsync(3000)
+    expect(result()[0].status).toBe('fail')
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('message del autor', () => {
   it('al fallar se muestra el mensaje del autor en vez del genérico (text, role, count, class, interaction)', async () => {
     root.innerHTML = '<p>adiós</p>'

@@ -28,7 +28,21 @@ describe('HARNESS_SOURCE', () => {
   it('avisa harness-ready al cargar', () => {
     const win = fakeWindow()
     install(vi.fn(), win)
-    expect(win.parent.postMessage).toHaveBeenCalledWith({ source: 'curso-react', type: 'harness-ready' }, '*')
+    expect(win.parent.postMessage).toHaveBeenCalledWith(
+      { source: 'curso-react', type: 'harness-ready', doc: expect.any(Number) },
+      '*',
+    )
+  })
+
+  it('etiqueta harness-ready y check-results con el mismo `doc` (una marca por carga de página)', async () => {
+    const win = fakeWindow()
+    install(vi.fn().mockResolvedValue([]), win)
+    const ready = win.parent.postMessage.mock.calls[0][0]
+    expect(ready.doc).toBe(performance.timeOrigin)
+    win.send({ source: 'curso-react', type: 'run-checks', runId: 1, checks: [] })
+    await vi.advanceTimersByTimeAsync(400)
+    const results = win.parent.postMessage.mock.calls[1][0]
+    expect(results).toMatchObject({ type: 'check-results', runId: 1, doc: ready.doc })
   })
 
   it('responde run-checks con el mismo runId y la raíz #root', async () => {
@@ -44,7 +58,13 @@ describe('HARNESS_SOURCE', () => {
     await vi.advanceTimersByTimeAsync(400)
     expect(run).toHaveBeenCalledWith(checks, root)
     expect(win.parent.postMessage).toHaveBeenCalledWith(
-      { source: 'curso-react', type: 'check-results', runId: 7, results: [{ index: 0, label: 'x', status: 'pass' }] },
+      {
+        source: 'curso-react',
+        type: 'check-results',
+        runId: 7,
+        doc: expect.any(Number),
+        results: [{ index: 0, label: 'x', status: 'pass' }],
+      },
       '*',
     )
     root.remove()

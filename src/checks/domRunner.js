@@ -74,6 +74,9 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 // cada POLL_MS hasta que la comprobación pasa o se agota el plazo compartido.
 const SETTLE_MS = 2000
 const POLL_MS = 100
+// Tope de toda la tanda: pasado, lo que quede se evalúa una sola vez. Debe quedar holgado
+// bajo el plazo de resultados de la página (useCheckRunner.js).
+const TOTAL_MS = 10000
 
 /** Repite `attempt` hasta que devuelva `{ ok: true }` o pase `deadline`. Si lanza, no reintenta. */
 async function settle(attempt, deadline) {
@@ -122,13 +125,14 @@ function evaluate(check, root) {
   }
 }
 
-// Cada interacción tiene su propio plazo: un clic puede disparar una carga nueva.
-async function runInteraction(check, root, settleMs) {
+// Cada interacción tiene su propio plazo (un clic puede disparar una carga nueva), compartido
+// por la búsqueda de sus pasos y su `expect`, y nunca más allá del tope de la tanda.
+async function runInteraction(check, root, deadline) {
   for (const step of check.steps) {
     const found = await settle(() => {
       const el = findByRole(root, step.role, step.name)[0]
       return el ? { ok: true, el } : { ok: false, message: roleMissing(step) }
-    }, Date.now() + settleMs)
+    }, deadline)
     if (!found.ok) return found
     const el = found.el
     if (step.action === 'click') {
@@ -145,7 +149,7 @@ async function runInteraction(check, root, settleMs) {
     }
     await wait(50) // dejar que React vuelva a dibujar
   }
-  const res = await settle(() => evaluate(check.expect, root), Date.now() + settleMs)
+  const res = await settle(() => evaluate(check.expect, root), deadline)
   return res.ok ? res : { ok: false, message: `Hice lo que se pide, pero ${lowerFirst(res.message)}` }
 }
 
@@ -158,18 +162,26 @@ function lowerFirst(s) {
  * (quien llama pasa solo los checks de iframe y reasigna los índices originales).
  * Si el autor puso `message` en el check, al fallar se muestra ese en vez del genérico.
  * `settleMs`: cuánto esperar a contenido que tarda en aparecer. Las comprobaciones
- * simples comparten un solo plazo desde el inicio; cada interacción tiene el suyo.
+ * simples comparten un solo plazo desde el inicio; cada interacción tiene el suyo
+ * (pasos + expect). `totalMs` acota toda la tanda.
  */
-export async function runDomChecks(checks, root = document.body, { settleMs = SETTLE_MS } = {}) {
-  const deadline = Date.now() + settleMs
+export async function runDomChecks(
+  checks,
+  root = document.body,
+  { settleMs = SETTLE_MS, totalMs = TOTAL_MS } = {},
+) {
+  const start = Date.now()
+  const hardDeadline = start + totalMs
+  const capped = (ms) => Math.min(Date.now() + ms, hardDeadline)
+  const simpleDeadline = capped(settleMs)
   const results = []
   for (let index = 0; index < checks.length; index++) {
     const check = checks[index]
     try {
       const res =
         check.type === 'interaction'
-          ? await runInteraction(check, root, settleMs)
-          : await settle(() => evaluate(check, root), deadline)
+          ? await runInteraction(check, root, capped(settleMs))
+          : await settle(() => evaluate(check, root), simpleDeadline)
       results.push(
         res.ok
           ? { index, label: check.label, status: 'pass' }
