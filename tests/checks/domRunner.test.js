@@ -15,7 +15,8 @@ afterEach(() => {
   root.remove()
 })
 
-const run = (checks) => runDomChecks(checks, root)
+// Sin espera por contenido que tarda en aparecer: aquí el DOM ya está listo.
+const run = (checks) => runDomChecks(checks, root, { settleMs: 0 })
 
 describe('text', () => {
   it('pasa ignorando mayúsculas, acentos y espacios', async () => {
@@ -186,6 +187,134 @@ describe('interaction', () => {
     expect(res.map((x) => x.status)).toEqual(['fail', 'fail'])
     expect(res[1].message).toBe('No encontré un botón que diga "Nada".')
     await act(async () => r.unmount())
+  })
+})
+
+describe('contenido que tarda en aparecer (datos cargados al montar)', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  const later = (ms, html) => setTimeout(() => (root.innerHTML = html), ms)
+  const settle = (checks, options) => {
+    const promise = runDomChecks(checks, root, options)
+    return { promise, after: (ms) => vi.advanceTimersByTimeAsync(ms) }
+  }
+
+  it('text/role/count/class pasan si el contenido aparece a los 600 ms', async () => {
+    root.innerHTML = '<p>Cargando…</p>'
+    later(600, '<h1>Lista</h1><ul><li>a</li><li>b</li></ul><button class="bg-blue-500">Más</button>')
+    const { promise, after } = settle([
+      { type: 'text', label: 't', match: 'Lista' },
+      { type: 'role', label: 'r', role: 'listitem', min: 2 },
+      { type: 'count', label: 'c', selector: 'li', min: 2 },
+      { type: 'class', label: 'k', selector: 'button', pattern: 'bg-blue-\\d+' },
+    ])
+    await after(2500)
+    expect((await promise).map((r) => r.status)).toEqual(['pass', 'pass', 'pass', 'pass'])
+  })
+
+  it('si nunca aparece, falla tras ~2 s con el mensaje normal', async () => {
+    root.innerHTML = '<p>Cargando…</p>'
+    let settled = null
+    const { promise, after } = settle([{ type: 'text', label: 't', match: 'Lista' }])
+    promise.then((r) => (settled = r))
+    await after(1900)
+    expect(settled).toBeNull()
+    await after(300)
+    expect(settled).toEqual([
+      { index: 0, label: 't', status: 'fail', message: 'No encontré el texto "Lista" en tu página.' },
+    ])
+  })
+
+  it('la espera es compartida: varias comprobaciones fallidas no suman 2 s cada una', async () => {
+    root.innerHTML = ''
+    let settled = null
+    const { promise, after } = settle([
+      { type: 'text', label: 'a', match: 'uno' },
+      { type: 'text', label: 'b', match: 'dos' },
+      { type: 'role', label: 'c', role: 'button' },
+    ])
+    promise.then((r) => (settled = r))
+    await after(2300)
+    expect(settled.map((r) => r.status)).toEqual(['fail', 'fail', 'fail'])
+  })
+
+  it('una comprobación que lanza error no se reintenta', async () => {
+    root.innerHTML = ''
+    let settled = null
+    const { promise, after } = settle([{ type: 'count', label: 'mal', selector: '###[[' }])
+    promise.then((r) => (settled = r))
+    await after(150)
+    expect(settled?.[0].status).toBe('error')
+  })
+
+  it('el expect de una interacción espera a que el resultado del clic aparezca', async () => {
+    root.innerHTML = '<button>Cargar</button><p>Nada</p>'
+    root.querySelector('button').addEventListener('click', () => later(500, '<button>Cargar</button><p>Listo</p>'))
+    const { promise, after } = settle([
+      {
+        type: 'interaction',
+        label: 'i',
+        steps: [{ action: 'click', role: 'button', name: 'Cargar' }],
+        expect: { type: 'text', match: 'Listo' },
+      },
+    ])
+    await after(3000)
+    expect((await promise)[0].status).toBe('pass')
+  })
+
+  it('el botón de una interacción también puede tardar en aparecer', async () => {
+    root.innerHTML = '<p>Cargando…</p>'
+    later(400, '<button>Ok</button><p>Ok pulsado</p>')
+    const { promise, after } = settle([
+      {
+        type: 'interaction',
+        label: 'i',
+        steps: [{ action: 'click', role: 'button', name: 'Ok' }],
+        expect: { type: 'text', match: 'Ok pulsado' },
+      },
+    ])
+    await after(3000)
+    expect((await promise)[0].status).toBe('pass')
+  })
+})
+
+describe('message del autor', () => {
+  it('al fallar se muestra el mensaje del autor en vez del genérico (text, role, count, class, interaction)', async () => {
+    root.innerHTML = '<p>adiós</p>'
+    const res = await run([
+      { type: 'text', label: 'a', match: 'hola', message: 'Pon un saludo.' },
+      { type: 'role', label: 'b', role: 'button', name: 'Sumar', message: 'Falta el botón Sumar.' },
+      { type: 'count', label: 'c', selector: 'li', min: 3, message: 'Pon tres elementos.' },
+      { type: 'class', label: 'd', selector: 'p', pattern: 'text-red', message: 'Píntalo de rojo.' },
+      {
+        type: 'interaction',
+        label: 'e',
+        steps: [{ action: 'click', role: 'button', name: 'Sumar' }],
+        expect: { type: 'text', match: 'x' },
+        message: 'El botón debe sumar.',
+      },
+    ])
+    expect(res.map((r) => r.status)).toEqual(['fail', 'fail', 'fail', 'fail', 'fail'])
+    expect(res.map((r) => r.message)).toEqual([
+      'Pon un saludo.',
+      'Falta el botón Sumar.',
+      'Pon tres elementos.',
+      'Píntalo de rojo.',
+      'El botón debe sumar.',
+    ])
+  })
+  it('sin message se mantiene el genérico; al pasar no hay mensaje; un error no usa el del autor', async () => {
+    root.innerHTML = '<p>hola</p>'
+    const res = await run([
+      { type: 'text', label: 'a', match: 'adiós' },
+      { type: 'text', label: 'b', match: 'hola', message: 'Pon un saludo.' },
+      { type: 'count', label: 'c', selector: '###[[', message: 'Pon tres elementos.' },
+    ])
+    expect(res[0]).toMatchObject({ status: 'fail', message: 'No encontré el texto "adiós" en tu página.' })
+    expect(res[1]).toEqual({ index: 1, label: 'b', status: 'pass' })
+    expect(res[2].status).toBe('error')
+    expect(res[2].message).not.toBe('Pon tres elementos.')
   })
 })
 

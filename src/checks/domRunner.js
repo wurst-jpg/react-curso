@@ -70,6 +70,20 @@ function roleMissing(check) {
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+// Lo que el alumno pinta puede tardar (datos que se cargan al montar): se reintenta
+// cada POLL_MS hasta que la comprobación pasa o se agota el plazo compartido.
+const SETTLE_MS = 2000
+const POLL_MS = 100
+
+/** Repite `attempt` hasta que devuelva `{ ok: true }` o pase `deadline`. Si lanza, no reintenta. */
+async function settle(attempt, deadline) {
+  for (;;) {
+    const res = attempt()
+    if (res.ok || Date.now() >= deadline) return res
+    await wait(Math.min(POLL_MS, Math.max(0, deadline - Date.now())))
+  }
+}
+
 /** Evalúa un check simple (text, role, count, class). Devuelve { ok, message? }. */
 function evaluate(check, root) {
   switch (check.type) {
@@ -108,10 +122,15 @@ function evaluate(check, root) {
   }
 }
 
-async function runInteraction(check, root) {
+// Cada interacción tiene su propio plazo: un clic puede disparar una carga nueva.
+async function runInteraction(check, root, settleMs) {
   for (const step of check.steps) {
-    const el = findByRole(root, step.role, step.name)[0]
-    if (!el) return { ok: false, message: roleMissing(step) }
+    const found = await settle(() => {
+      const el = findByRole(root, step.role, step.name)[0]
+      return el ? { ok: true, el } : { ok: false, message: roleMissing(step) }
+    }, Date.now() + settleMs)
+    if (!found.ok) return found
+    const el = found.el
     if (step.action === 'click') {
       el.click()
     } else if (step.action === 'type') {
@@ -126,7 +145,7 @@ async function runInteraction(check, root) {
     }
     await wait(50) // dejar que React vuelva a dibujar
   }
-  const res = evaluate(check.expect, root)
+  const res = await settle(() => evaluate(check.expect, root), Date.now() + settleMs)
   return res.ok ? res : { ok: false, message: `Hice lo que se pide, pero ${lowerFirst(res.message)}` }
 }
 
@@ -137,18 +156,24 @@ function lowerFirst(s) {
 /**
  * Corre checks de iframe. `index` = posición en el arreglo recibido
  * (quien llama pasa solo los checks de iframe y reasigna los índices originales).
+ * Si el autor puso `message` en el check, al fallar se muestra ese en vez del genérico.
+ * `settleMs`: cuánto esperar a contenido que tarda en aparecer. Las comprobaciones
+ * simples comparten un solo plazo desde el inicio; cada interacción tiene el suyo.
  */
-export async function runDomChecks(checks, root = document.body) {
+export async function runDomChecks(checks, root = document.body, { settleMs = SETTLE_MS } = {}) {
+  const deadline = Date.now() + settleMs
   const results = []
   for (let index = 0; index < checks.length; index++) {
     const check = checks[index]
     try {
       const res =
-        check.type === 'interaction' ? await runInteraction(check, root) : evaluate(check, root)
+        check.type === 'interaction'
+          ? await runInteraction(check, root, settleMs)
+          : await settle(() => evaluate(check, root), deadline)
       results.push(
         res.ok
           ? { index, label: check.label, status: 'pass' }
-          : { index, label: check.label, status: 'fail', message: res.message },
+          : { index, label: check.label, status: 'fail', message: check.message || res.message },
       )
     } catch (e) {
       results.push({
