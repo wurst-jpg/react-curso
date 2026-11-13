@@ -721,7 +721,7 @@ const agregarYBorrar = (descripcion, label, antes = []) => ({
 const IR_A_GASTOS = [pulsar('link', 'Gastos')]
 
 const CONTRATO_FORM =
-  'Para poder comprobarlo, los dos campos deben tener su **etiqueta accesible** (el atributo `aria-label`) con los textos **Descripción** y **Monto**, y el botón debe decir **Agregar**.'
+  'Para poder comprobarlo, los dos campos deben tener su **etiqueta accesible** (el atributo `aria-label`) con los textos **Descripción** y **Monto**, y el botón debe decir **Agregar**. La categoría debe venir elegida por defecto (por ejemplo Comida): el gasto se tiene que poder agregar escribiendo solo descripción y monto.'
 
 const modulo = {
   id: 'm11',
@@ -746,11 +746,13 @@ Si en alguna etapa tu código se enreda, hay un botón para empezar esa etapa de
 
 - Un título principal: **Mis gastos**.
 - Una lista con estos 3 gastos de ejemplo (cada uno con su descripción, su monto con el signo \`$\` pegado al número, y su categoría):
-  - **Almuerzo**, **$12000**, Comida
-  - **Bus**, **$3000**, Transporte
-  - **Cine**, **$20000**, Ocio
+  - **Almuerzo**, **$12000**, **Comida**
+  - **Bus**, **$3000**, **Transporte**
+  - **Cine**, **$20000**, **Ocio**
 
-Escribe los montos sin puntos ni comas (\`$12000\`). Organiza tu código en varios archivos (por ejemplo un componente para la lista); tú eliges los nombres.`,
+Las categorías (Comida, Transporte, Ocio) las usaremos más adelante.
+
+Escribe los montos **sin puntos ni comas** (\`$12000\`). Organiza tu código en varios archivos (por ejemplo un componente para la lista); tú eliges los nombres.`,
           files: {
             '/src/main.jsx': MAIN,
             '/src/App.jsx': `export default function App() {
@@ -760,7 +762,7 @@ Escribe los montos sin puntos ni comas (\`$12000\`). Organiza tu código en vari
           },
           activeFile: '/src/App.jsx',
           hints: [
-            'Guarda los 3 gastos en un arreglo de objetos, cada uno con descripcion, monto y categoria (y un id para la key).',
+            'Guarda los 3 gastos en un arreglo de objetos, cada uno con descripcion, monto y categoria (y un id para la key). El monto va como número (12000, sin comillas).',
             'Crea un componente en su propio archivo que reciba el arreglo por props y use map para dibujar un <li> por gasto, dentro de un <ul>.',
             "En App.jsx: pon <h1>Mis gastos</h1> y usa tu componente de lista. El monto se escribe {'$' + gasto.monto}.",
           ],
@@ -772,18 +774,18 @@ Escribe los montos sin puntos ni comas (\`$12000\`). Organiza tu código en vari
           checks: [
             { type: 'role', role: 'heading', name: 'Mis gastos', label: 'Hay un título "Mis gastos"' },
             { type: 'text', match: 'Almuerzo', label: 'Se ve el gasto "Almuerzo"' },
-            { type: 'text', match: '$12000', label: 'Se ve su monto "$12000"' },
+            { type: 'text', match: '12000', label: 'Se ve su monto (12000)' },
             { type: 'text', match: 'Bus', label: 'Se ve el gasto "Bus"' },
-            { type: 'text', match: '$3000', label: 'Se ve su monto "$3000"' },
+            { type: 'text', match: '3000', label: 'Se ve su monto (3000)' },
             { type: 'text', match: 'Cine', label: 'Se ve el gasto "Cine"' },
-            { type: 'text', match: '$20000', label: 'Se ve su monto "$20000"' },
-            { type: 'role', role: 'listitem', min: 3, label: 'Los gastos están en una lista (al menos 3 elementos)' },
+            { type: 'text', match: '20000', label: 'Se ve su monto (20000)' },
             {
               type: 'file-count',
               min: 3,
               label: 'Separaste tu código en varios archivos',
               message: 'Divide tu app en piezas: crea al menos un archivo de componente además de main.jsx y App.jsx.',
             },
+            { type: 'manual', label: '¿Los 3 gastos se ven uno debajo de otro, como una lista?' },
             { type: 'manual', label: '¿Cada gasto muestra también su categoría (Comida, Transporte, Ocio)?' },
           ],
           xp: 30,
@@ -815,7 +817,7 @@ Los gastos viven en el estado de un componente (\`useState\`), y los botones lla
 Los 3 gastos de ejemplo deben seguir estando al inicio.`,
           hints: [
             'Necesitas un estado para la lista de gastos (empieza con los de ejemplo) y un estado para cada campo del formulario.',
-            "En la función del submit: evento.preventDefault(), convierte el monto con Number(monto), y si descripcion.trim() === '' o no es mayor que 0, guarda el aviso en un estado y haz return.",
+            "En la función del submit: evento.preventDefault(), convierte el monto con Number(monto), y si descripcion.trim() === '' o no es mayor que 0, guarda el aviso en un estado y haz return. Copia el aviso tal cual, con 'mayor que 0'.",
             'Si todo está bien: llama a una función que reciba el gasto { id: Date.now(), descripcion, monto, categoria } y haga setGastos([...gastos, nuevo]); luego vacía los campos y el aviso.',
           ],
           solution: {
@@ -836,12 +838,6 @@ Los 3 gastos de ejemplo deben seguir estando al inicio.`,
               steps: [tipear('Descripción', 'Helado'), tipear('Monto', '4500'), pulsar('button', 'Agregar')],
               expect: { type: 'text', match: 'Helado' },
             },
-            {
-              type: 'interaction',
-              label: 'El gasto nuevo muestra su monto "$4500"',
-              steps: [tipear('Descripción', 'Helado 2'), tipear('Monto', '4500'), pulsar('button', 'Agregar')],
-              expect: { type: 'text', match: '$4500' },
-            },
             { type: 'text', match: 'Almuerzo', label: 'Los gastos de ejemplo siguen en la lista' },
             { type: 'role', role: 'button', name: 'Agregar', label: 'Hay un botón "Agregar"' },
             { type: 'manual', label: '¿Puedes elegir la categoría (Comida, Transporte, Ocio, Otros) y el gasto nuevo la muestra?' },
@@ -855,10 +851,8 @@ Los 3 gastos de ejemplo deben seguir estando al inicio.`,
           startFrom: 'previous',
           instructions: `Dos mejoras:
 
-1. **Borrar:** cada gasto tiene un botón con el texto **Eliminar**. Debe tener como etiqueta accesible (\`aria-label\`) la palabra Eliminar seguida de la descripción del gasto, por ejemplo \`aria-label={'Eliminar ' + gasto.descripcion}\`. Al pulsarlo, ese gasto desaparece.
-2. **Total general:** muestra la suma de todos los gastos con el formato **Total: $35000** (con los 3 de ejemplo). Debe actualizarse al agregar o borrar.
-
-Si estuviste probando en la vista previa (agregando o borrando), pulsa el botón de recargar de la vista previa antes de comprobar, para volver a los 3 gastos de ejemplo.`,
+1. **Borrar:** cada gasto tiene un botón con el texto **Eliminar**. Debe tener como etiqueta accesible (\`aria-label\`) la palabra Eliminar seguida de la descripción del gasto, por ejemplo \`aria-label={'Eliminar ' + gasto.descripcion}\`. Al pulsarlo, ese gasto desaparece (sin ventana de confirmación con \`confirm\`).
+2. **Total general:** muestra la suma de todos los gastos con el formato **Total: $35000** (con los 3 de ejemplo). Debe actualizarse al agregar o borrar.`,
           hints: [
             'Para borrar: pasa a la lista una función alBorrar(id) que haga setGastos(gastos.filter((g) => g.id !== id)).',
             "El total se calcula con gastos.reduce((suma, g) => suma + g.monto, 0) en el componente que tiene la lista de gastos (no hace falta un estado nuevo).",
@@ -869,7 +863,7 @@ Si estuviste probando en la vista previa (agregando o borrando), pulsa el botón
             '/src/App.jsx': APP_3,
           },
           checks: [
-            { type: 'text', match: 'Total: $35000', label: 'Con los 3 gastos de ejemplo se ve "Total: $35000"' },
+            { type: 'text', match: '35000', label: 'Con los 3 gastos de ejemplo el total es 35000' },
             { type: 'role', role: 'button', name: 'Eliminar', min: 3, label: 'Cada gasto tiene su botón "Eliminar"' },
             agregarYBorrar('Zzz prueba', 'Agregar un gasto y borrarlo con su botón "Eliminar" funciona'),
             { type: 'manual', label: '¿El total sube al agregar un gasto y baja al borrar uno?' },
@@ -893,10 +887,8 @@ Para el filtro, un estado guarda cuál categoría está elegida, y la lista que 
           startFrom: 'previous',
           instructions: `Añade dos cosas a tu app:
 
-1. **Totales por categoría:** una sección que muestre una línea por categoría, con este formato exacto: **Comida: $12000**, **Transporte: $3000**, **Ocio: $20000**, **Otros: $0** (con los gastos de ejemplo). Se actualizan al agregar o borrar. El **Total** general sigue mostrando todo.
-2. **Filtro:** botones Todas, Comida, Transporte, Ocio y Otros (usa botones, no lista desplegable, para que se puedan pulsar y comprobar). Al pulsar una categoría, la lista muestra solo los gastos de esa categoría; **Todas** los muestra todos.
-
-Si estuviste probando en la vista previa, pulsa el botón de recargar de la vista previa antes de comprobar.`,
+1. **Totales por categoría:** una sección que muestre una línea por categoría, con este formato exacto: **Comida: $12000**, **Transporte: $3000**, **Ocio: $20000**, Otros: $0 (con los gastos de ejemplo). Se actualizan al agregar o borrar. El **Total** general sigue mostrando todo.
+2. **Filtro:** botones Todas, Comida, Transporte, Ocio y Otros (usa botones, no lista desplegable, para que se puedan pulsar y comprobar). Al pulsar una categoría, la lista muestra solo los gastos de esa categoría; **Todas** los muestra todos.`,
           hints: [
             'Para el total de una categoría: gastos.filter((g) => g.categoria === categoria).reduce((suma, g) => suma + g.monto, 0). Repítelo para cada categoría con map sobre tu lista de categorías.',
             "Para el filtro: un estado 'Todas' por defecto. Los botones llaman setFiltro(nombre). La lista que dibujas es filtro === 'Todas' ? gastos : gastos.filter(...).",
@@ -911,27 +903,27 @@ Si estuviste probando en la vista previa, pulsa el botón de recargar de la vist
             { type: 'text', match: 'Comida: $12000', label: 'Se ve "Comida: $12000"' },
             { type: 'text', match: 'Transporte: $3000', label: 'Se ve "Transporte: $3000"' },
             { type: 'text', match: 'Ocio: $20000', label: 'Se ve "Ocio: $20000"' },
-            { type: 'text', match: 'Otros: $0', label: 'Se ve "Otros: $0"' },
             { type: 'text', match: 'Total: $35000', label: 'El total general sigue diciendo "Total: $35000"' },
             {
               type: 'interaction',
-              label: 'Al pulsar el botón "Comida" se ve el gasto "Almuerzo"',
+              label: 'Al pulsar "Comida" desaparece "Bus" de la lista',
               steps: [pulsar('button', 'Comida')],
-              expect: { type: 'text', match: 'Almuerzo' },
+              expect: { type: 'count', selector: '[aria-label="Eliminar Bus"]', max: 0 },
             },
             {
               type: 'interaction',
-              label: 'Al pulsar el botón "Transporte" se ve el gasto "Bus"',
+              label: 'Al pulsar "Transporte" desaparece "Almuerzo" de la lista',
               steps: [pulsar('button', 'Transporte')],
-              expect: { type: 'text', match: 'Bus' },
+              expect: { type: 'count', selector: '[aria-label="Eliminar Almuerzo"]', max: 0 },
             },
             {
               type: 'interaction',
-              label: 'Al pulsar el botón "Todas" vuelven a verse todos (por ejemplo "Cine")',
+              label: 'Al pulsar "Todas" vuelven los 3 gastos',
               steps: [pulsar('button', 'Todas')],
-              expect: { type: 'text', match: 'Cine' },
+              expect: { type: 'role', role: 'button', name: 'Eliminar', min: 3 },
             },
             { type: 'manual', label: '¿Al elegir "Transporte" desaparecen de la lista los gastos que no son de Transporte?' },
+            { type: 'manual', label: '¿Si agregas un gasto de Otros, aparece su total?' },
             { type: 'manual', label: '¿Los totales por categoría suben al agregar un gasto nuevo de esa categoría?' },
           ],
           xp: 30,
@@ -959,10 +951,12 @@ Cuándo usarlo: lees al **empezar** (valor inicial del estado) y guardas cada ve
 - Al abrir la app, si hay gastos guardados se usan esos; si no hay nada guardado, empieza con los 3 de ejemplo.
 - Si borras todos los gastos y recargas, la lista debe seguir vacía (no vuelven los de ejemplo).
 
-Ojo: a partir de aquí lo que agregues queda guardado también en la vista previa, por eso ya no se comprueban totales exactos.`,
+Ojo: a partir de aquí lo que agregues queda guardado también en la vista previa, por eso ya no se comprueban totales exactos.
+
+Si la comprobación de agregar y borrar falla, borra a mano en la vista previa cualquier gasto que empiece por **Zzz** y vuelve a comprobar.`,
           hints: [
             'Calcula el valor inicial del estado con una función que haga localStorage.getItem y, si hay algo, JSON.parse; si no, devuelve los de ejemplo. useState acepta esa función.',
-            'Guarda con un useEffect que dependa de los gastos: localStorage.setItem(clave, JSON.stringify(gastos)).',
+            'Guarda con un useEffect que dependa de los gastos: localStorage.setItem(clave, JSON.stringify(gastos)). Lo de leer NO va en un useEffect: va en la función inicial de useState, para que la primera pantalla ya muestre lo guardado.',
             "Pregunta con if (guardado) y no con si el arreglo tiene elementos: un arreglo vacío guardado es '[]', que es un texto y cuenta como \"hay algo guardado\". Envuelve en try/catch por si el navegador no deja usar el almacenamiento.",
           ],
           solution: {
@@ -971,14 +965,14 @@ Ojo: a partir de aquí lo que agregues queda guardado también en la vista previ
           checks: [
             {
               type: 'file-includes',
-              pattern: 'localStorage',
-              label: 'Tu código usa localStorage',
-              message: 'No encontré localStorage en tu código: guarda y lee los gastos con localStorage.setItem y localStorage.getItem.',
+              pattern: 'localStorage\\s*\\.\\s*(setItem|getItem)',
+              label: 'Tu código usa localStorage.setItem o localStorage.getItem',
+              message: 'Guarda y lee con localStorage.setItem y localStorage.getItem.',
             },
             agregarYBorrar('Zzz guardado', 'Agregar y borrar un gasto sigue funcionando'),
-            { type: 'manual', label: 'Agregué un gasto, recargué la vista previa (botón de recargar) y mi gasto sigue ahí' },
-            { type: 'manual', label: 'Borré un gasto, recargué la vista previa y sigue borrado' },
-            { type: 'manual', label: 'Si guardo todos los gastos borrados (lista vacía) y recargo, no vuelven los de ejemplo' },
+            { type: 'manual', label: '¿Si agregas un gasto y recargas la vista previa (botón de recargar), tu gasto sigue ahí?' },
+            { type: 'manual', label: '¿Si borras un gasto y recargas, sigue borrado?' },
+            { type: 'manual', label: '¿Si borras todos los gastos y recargas, la lista sigue vacía (no vuelven los 3 de ejemplo)?' },
           ],
           xp: 30,
         },
@@ -1004,10 +998,12 @@ Importa todo desde \`'react-router'\`. En esta vista previa usa \`<MemoryRouter>
           dependencies: { 'react-router': '^7' },
           instructions: `Reparte tu app en páginas (importando desde \`'react-router'\`):
 
-- Un **menú siempre visible** con dos enlaces: **Gastos** (la página con el formulario, el filtro, la lista y el total) y **Resumen**.
-- La página **Resumen** tiene un título **Resumen por categoría** y muestra los totales por categoría.
+- Un **menú siempre visible** con dos enlaces: **Gastos** (el enlace debe decir exactamente **Gastos**; la página con el formulario, el filtro, la lista y el total) y **Resumen**.
+- La página **Resumen** tiene un título (un \`<h2>\`) **Resumen por categoría** y muestra los totales por categoría.
 - Cada gasto de la lista tiene su descripción como **enlace** a su página de **detalle**, con un título **Detalle del gasto**, la descripción, el monto y la categoría, y un enlace **Volver** que regresa a la página de Gastos.
-- Mantén todo lo anterior funcionando (agregar con \`aria-label\` "Descripción" y "Monto", botón "Agregar", botones "Eliminar ..."), y el guardado en el navegador.`,
+- Mantén todo lo anterior funcionando (agregar con \`aria-label\` "Descripción" y "Monto", botón "Agregar", botones "Eliminar ..."), y el guardado en el navegador.
+
+Si la comprobación de agregar y borrar falla, borra a mano en la vista previa cualquier gasto que empiece por **Zzz** y vuelve a comprobar.`,
           hints: [
             "Mete <MemoryRouter> y un <Routes> con tres <Route>: '/', '/resumen' y '/gasto/:id'. El menú (<nav> con dos <Link>) va dentro del MemoryRouter pero fuera de <Routes>, para que se vea siempre.",
             'Deja los gastos (useState + localStorage) en App y pásalos a cada página por props. En la página de detalle usa const { id } = useParams() y busca con gastos.find((g) => String(g.id) === id).',
@@ -1082,7 +1078,11 @@ Importa todo desde \`'react-router'\`. En esta vista previa usa \`<MemoryRouter>
 - Usa flex o grid para ordenar el contenido.
 - Es responsive: en pantalla pequeña (celular) todo cabe y se lee bien, y en pantalla ancha se aprovecha (usa prefijos como \`sm:\` o \`md:\`).
 
-Tú decides colores y estilo; abajo hay una lista para que revises tu propio trabajo.`,
+Tú decides colores y estilo; abajo hay una lista para que revises tu propio trabajo.
+
+Si la comprobación de agregar y borrar falla, borra a mano en la vista previa cualquier gasto que empiece por **Zzz** y vuelve a comprobar.
+
+Cuando termines: lo lograste. Esta app la construiste tú, pieza por pieza, con tus propias decisiones.`,
           hints: [
             'Empieza por lo grande: un contenedor con mx-auto, max-w-2xl y p-4 que centre el contenido. Luego estilos para los botones: bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700.',
             'Para ordenar: flex con gap-2 (o grid con gap-2) en el formulario y en cada gasto. Para la lista, divide-y y border le dan un aspecto de tarjeta.',
