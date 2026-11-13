@@ -4,6 +4,7 @@ import { EditorView, keymap } from '@codemirror/view'
 import { createReactSource } from './reactCompletions.js'
 import { createTailwindSource } from './tailwindCompletions.js'
 import { createProjectSource } from './projectWords.js'
+import { createImportSource } from './importCompletions.js'
 
 // Lista oscura, a juego con el editor: fondo oscuro, texto claro, opción elegida en azul cielo.
 export const autocompleteTheme = EditorView.theme({
@@ -27,20 +28,20 @@ export const autocompleteTheme = EditorView.theme({
  * Las tres fuentes de sugerencias. `isEnabled()` se consulta cada vez: así el interruptor
  * funciona sin reconfigurar ni recrear el editor (el código y la vista previa no se tocan).
  */
-export function createCompletionSources({ getFiles, isEnabled = () => true }) {
-  return [createReactSource(isEnabled), createTailwindSource(isEnabled), createProjectSource(getFiles, isEnabled)]
+export function createCompletionSources({ getFiles, getActivePath = () => '', isEnabled = () => true }) {
+  return [createImportSource(getFiles, getActivePath, isEnabled), createReactSource(isEnabled), createTailwindSource(isEnabled), createProjectSource(getFiles, isEnabled)]
 }
 
 /**
  * Autocompletado tipo VS Code. El cierre automático de paréntesis, comillas y etiquetas
  * ya lo hace Sandpack (closeBrackets + autoCloseTags de lang-javascript), no se repite aquí.
  */
-export function createAutocompleteExtension({ getFiles, isEnabled }) {
+export function createAutocompleteExtension({ getFiles, getActivePath, isEnabled }) {
   return [
     // Las plantillas repiten un hueco (p. ej. el nombre del componente) con varios cursores a la vez.
     EditorState.allowMultipleSelections.of(true),
     autocompleteTheme,
-    autocompletion({ override: createCompletionSources({ getFiles, isEnabled }), icons: true }),
+    autocompletion({ override: createCompletionSources({ getFiles, getActivePath, isEnabled }), icons: true }),
     // Tab elige la sugerencia (como Enter); sin lista abierta, Tab sigue sangrando como siempre.
     Prec.high(keymap.of([{ key: 'Tab', run: acceptCompletion }])),
   ]
@@ -51,16 +52,20 @@ export function createAutocompleteExtension({ getFiles, isEnabled }) {
  * (por eso el editor no se recrea) y `setEnabled` / `setFiles` solo cambian lo que las
  * fuentes consultan en cada sugerencia.
  */
-export function createAutocompleteController({ enabled = true, files = {} } = {}) {
+export function createAutocompleteController({ enabled = true, files = {}, activePath = '' } = {}) {
   let isOn = enabled
   let current = files
+  let active = activePath
   return {
-    extension: createAutocompleteExtension({ getFiles: () => current, isEnabled: () => isOn }),
+    extension: createAutocompleteExtension({ getFiles: () => current, getActivePath: () => active, isEnabled: () => isOn }),
     setEnabled(value) {
       isOn = Boolean(value)
     },
     setFiles(value) {
       current = value
+    },
+    setActivePath(value) {
+      active = value
     },
   }
 }

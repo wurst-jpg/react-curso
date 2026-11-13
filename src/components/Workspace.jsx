@@ -70,9 +70,10 @@ export default function Workspace({ challenge, nextChallenge, hintsShown, onReve
   // El interruptor del autocompletado no reconfigura el editor: las extensiones se crean una
   // sola vez y solo cambia lo que consultan, así no se recrea el editor ni la vista previa.
   const [autocomplete, setAutocomplete] = useState(() => loadSettings().autocomplete)
-  const [controller] = useState(() => createAutocompleteController({ enabled: autocomplete, files }))
+  const [controller] = useState(() => createAutocompleteController({ enabled: autocomplete, files, activePath: sandpack.activeFile }))
   const extensions = useMemo(() => [createLintExtension(), controller.extension], [controller])
   useEffect(() => controller.setFiles(files), [controller, files])
+  useEffect(() => controller.setActivePath(sandpack.activeFile), [controller, sandpack.activeFile])
   function toggleAutocomplete() {
     const next = !autocomplete
     controller.setEnabled(next)
