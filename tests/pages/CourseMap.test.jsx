@@ -38,6 +38,15 @@ test('sin progreso muestra 0 XP, Nivel 1 y el Módulo 0 disponible', () => {
   expect(within(card).getByText('0 de 3 retos')).toBeInTheDocument()
 })
 
+test('sin progreso todos los módulos están abiertos, sin candado ni aviso de bloqueo', () => {
+  setup()
+  expect(screen.getAllByRole('link', { name: /Módulo \d+/ }).length).toBeGreaterThan(1)
+  expect(screen.queryByText(/Bloqueado/)).not.toBeInTheDocument()
+  expect(screen.queryByText('🔒')).not.toBeInTheDocument()
+  expect(document.body.textContent).not.toContain('🔒')
+  expect(screen.getByText(/dentro de cada módulo los retos se abren en orden/)).toBeInTheDocument()
+})
+
 test('con un reto hecho: 10 XP, Nivel 1 y logro "¡Primer reto!"', () => {
   withProgress({ 'm00-l1-c1': done }, 10)
   setup()

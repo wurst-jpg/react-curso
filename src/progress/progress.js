@@ -1,4 +1,3 @@
-import { flattenChallenges } from '../content/course.js'
 import { safeRead, safeWrite } from './storage.js'
 
 export const PROGRESS_KEY = 'curso-react:progress:v1'
@@ -44,21 +43,22 @@ export function markHintUsed(p, id) {
   return { ...p, hintsUsed: { ...p.hintsUsed, [id]: true } }
 }
 
+// Todos los módulos están abiertos; dentro de un módulo los retos se abren en orden.
 export function isChallengeUnlocked(p, modules, id) {
   if (p.completed[id]) return true
-  const flat = flattenChallenges(modules)
-  const i = flat.findIndex((e) => e.challenge.id === id)
-  if (i === -1) return false
-  if (i === 0) return true
-  return Boolean(p.completed[flat[i - 1].challenge.id])
+  for (const module of modules) {
+    const ids = moduleIds(module)
+    const i = ids.indexOf(id)
+    if (i === -1) continue
+    return i === 0 || Boolean(p.completed[ids[i - 1]])
+  }
+  return false
 }
 
 function moduleIds(module) {
   return module.lessons.flatMap((l) => l.challenges.map((c) => c.id))
 }
 
-// `modules` (todo el curso) es necesario para saber si el módulo anterior
-// está terminado; sin él, el módulo se trata como el primero del curso.
 export function moduleStats(p, module, modules = [module]) {
   const ids = moduleIds(module)
   const done = ids.filter((id) => p.completed[id]).length

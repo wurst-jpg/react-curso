@@ -107,10 +107,17 @@ describe('isChallengeUnlocked', () => {
     expect(isChallengeUnlocked(p2, modules, 'a2')).toBe(true)
     expect(isChallengeUnlocked(p2, modules, 'a3')).toBe(false)
   })
-  it('cruza módulos', () => {
-    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['a1', 'a2']), modules, 'a3')).toBe(true)
-    expect(isChallengeUnlocked(emptyProgress(), modules, 'b1')).toBe(false)
-    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['a1', 'a2', 'a3']), modules, 'b1')).toBe(true)
+  it('el primer reto de cualquier módulo está abierto sin progreso', () => {
+    expect(isChallengeUnlocked(emptyProgress(), modules, 'b1')).toBe(true)
+  })
+  it('el orden se respeta dentro de cada módulo y no se cruza entre módulos', () => {
+    expect(isChallengeUnlocked(emptyProgress(), modules, 'b2')).toBe(false)
+    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['a1', 'a2', 'a3']), modules, 'b2')).toBe(false)
+    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['b1']), modules, 'b2')).toBe(true)
+    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['b1']), modules, 'a2')).toBe(false)
+  })
+  it('un reto completado sigue abierto', () => {
+    expect(isChallengeUnlocked(completeAll(emptyProgress(), ['b2']), modules, 'b2')).toBe(true)
   })
   it('un reto nuevo insertado antes de uno completado no lo bloquea', () => {
     const p = completeAll(emptyProgress(), ['a1', 'a2'])
@@ -125,9 +132,8 @@ describe('isChallengeUnlocked', () => {
 describe('moduleStats', () => {
   it('cuenta hechos, total y desbloqueo del primer reto', () => {
     expect(moduleStats(emptyProgress(), A, modules)).toEqual({ done: 0, total: 3, unlocked: true })
-    expect(moduleStats(emptyProgress(), B, modules)).toEqual({ done: 0, total: 2, unlocked: false })
+    expect(moduleStats(emptyProgress(), B, modules)).toEqual({ done: 0, total: 2, unlocked: true })
     const p = completeAll(emptyProgress(), ['a1', 'a2', 'a3'])
-    expect(moduleStats(p, B, modules).unlocked).toBe(true)
     expect(moduleStats(p, A, modules).done).toBe(3)
   })
   it('ids completados que ya no existen no rompen ni cuentan', () => {
@@ -173,5 +179,12 @@ describe('con el curso real', () => {
     const [first, second] = course[0].lessons.flatMap((l) => l.challenges)
     expect(isChallengeUnlocked(emptyProgress(), course, first.id)).toBe(true)
     expect(isChallengeUnlocked(emptyProgress(), course, second.id)).toBe(false)
+  })
+  it('el primer reto de cada módulo real está abierto y el segundo cerrado', () => {
+    for (const m of course) {
+      const [first, second] = m.lessons.flatMap((l) => l.challenges)
+      expect(isChallengeUnlocked(emptyProgress(), course, first.id)).toBe(true)
+      if (second) expect(isChallengeUnlocked(emptyProgress(), course, second.id)).toBe(false)
+    }
   })
 })

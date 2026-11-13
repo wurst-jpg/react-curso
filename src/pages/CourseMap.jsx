@@ -105,7 +105,7 @@ export default function CourseMap() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Curso de React</h1>
         <p className="text-slate-300">
-          Elige un módulo y resuelve sus retos. Cada reto superado te da XP; los módulos se abren de uno en uno.
+          Elige un módulo y resuelve sus retos. Cada reto superado te da XP; puedes empezar por el módulo que quieras; dentro de cada módulo los retos se abren en orden.
         </p>
       </div>
 
