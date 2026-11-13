@@ -175,7 +175,7 @@ export default function App() {
           id: 'm09-l1-c2',
           title: 'Un hook con valor inicial',
           instructions:
-            'Hay dos contadores: **Manzanas** debe empezar en 3 y **Naranjas** en 0. Cambia `useContador` para que reciba un valor inicial (por defecto 0) y agrega una función `reiniciar` que regrese la cuenta a ese valor. En `Contador.jsx` pásale el valor inicial al hook y añade un botón **Reiniciar**.',
+            'Hay dos contadores: deben verse **Manzanas: 3** y **Naranjas: 0** al empezar. Cambia `useContador` para que reciba un valor inicial (por defecto 0) y agrega una función `reiniciar` que regrese la cuenta a ese valor. En `Contador.jsx` pásale el valor inicial al hook y añade un botón **Reiniciar**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/hooks/useContador.js': USE_CONTADOR_FIJO,
@@ -624,7 +624,7 @@ Y si la lógica del estado es larga, puedes guardarla en un hook propio (como \`
           id: 'm09-l4-c1',
           title: 'Un botón que cambia el tema',
           instructions:
-            'El Provider `TemaProvider` solo cuelga el tema. Agrega la función `alternar` (cambia entre `"claro"` y `"oscuro"`) y cuélgala también en el `value`. Después envuelve la app con `<TemaProvider>` en `App.jsx`. Al pulsar **Cambiar tema** la página debe pasar de **Tema: claro** a **Tema: oscuro**.',
+            'El Provider `TemaProvider` solo cuelga el tema. Agrega la función `alternar` (cambia entre `"claro"` y `"oscuro"`) y cuélgala también en el `value`. Después envuelve la app con `<TemaProvider>` en `App.jsx`. Al principio la vista previa muestra un error; es normal hasta que envuelvas con `TemaProvider`. Al pulsar **Cambiar tema** la página debe pasar de **Tema: claro** a **Tema: oscuro**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/context/TemaContext.jsx': `import { createContext, useState } from 'react'
@@ -727,7 +727,7 @@ export default function App() {
           id: 'm09-l4-c2',
           title: 'Mini app de gastos, bien ordenada',
           instructions:
-            'Los componentes `FormGasto` y `ListaGastos` ya están hechos y esperan encontrar un tablón `GastosContext` con `{ gastos, total, agregar }`. Tú construyes el resto (al crear cada archivo, escribe en "Nombre del archivo" la carpeta y el nombre, por ejemplo `hooks/useGastos.js`):\n\n1. `/src/hooks/useGastos.js`: hook con el estado `gastos` (lista vacía al inicio), una función `agregar(nombre, monto)` que añade un gasto `{ id, nombre, monto }` (con el monto convertido a número) y el `total` sumado. Devuelve `{ gastos, total, agregar }`.\n2. `/src/context/GastosContext.jsx`: exporta `GastosContext` y un `GastosProvider` que use tu hook y cuelgue su resultado.\n3. En `App.jsx`, envuelve todo con `<GastosProvider>`.\n\nAl agregar un gasto **Taxi** de 80 debe verse en la lista y el total debe decir **Total: 80**.',
+            'Los componentes `FormGasto` y `ListaGastos` ya están hechos y esperan encontrar un tablón `GastosContext` con `{ gastos, total, agregar }`. Tú construyes el resto (al crear cada archivo, escribe en "Nombre del archivo" la carpeta y el nombre, por ejemplo `hooks/useGastos.js`):\n\n1. `/src/hooks/useGastos.js`: hook con el estado `gastos` (lista vacía al inicio), una función `agregar(nombre, monto)` que añade un gasto `{ id, nombre, monto }` (con el monto convertido a número) y el `total` sumado. Devuelve `{ gastos, total, agregar }`.\n2. `/src/context/GastosContext.jsx`: exporta `GastosContext` y un `GastosProvider` que use tu hook y cuelgue su resultado.\n3. En `App.jsx`, envuelve todo con `<GastosProvider>`.\n\nLa vista previa mostrará un error hasta que crees el archivo del Context; es normal. Al agregar un gasto Taxi de 80 debe aparecer **Taxi: 80** en la lista, y al agregar después Cena de 40 el total debe decir **Total: 120**.',
           files: {
             '/src/main.jsx': MAIN,
             '/src/components/FormGasto.jsx': `import { useContext, useState } from 'react'
@@ -852,7 +852,7 @@ export default function App() {
             },
             {
               type: 'file-exists',
-              pattern: '^/src/context/GastosContext\\.jsx?$',
+              pattern: '^/src/context/GastosContext\\.jsx$',
               label: 'Existe /src/context/GastosContext.jsx',
               message: 'Falta crear el archivo /src/context/GastosContext.jsx.',
             },

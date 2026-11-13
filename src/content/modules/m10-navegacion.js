@@ -93,7 +93,9 @@ const modulo = {
     {
       id: 'm10-l1',
       title: 'Rutas y enlaces',
-      explanation: `Hasta ahora tus apps tenían una sola pantalla. Una app de verdad tiene varias "páginas": inicio, lista, detalle... **React Router** es la librería que las maneja.
+      explanation: `Hasta ahora tus apps tenían una sola pantalla. Una app de verdad tiene varias "páginas": inicio, lista, detalle... **React Router** es la librería (una caja de herramientas ya hecha por otros) que las maneja.
+
+Aquí "ruta" significa una página de tu app (por ejemplo \`/gastos\`), no la ruta de un archivo que escribías en los \`import\`.
 
 Piensa en la recepción de un edificio: te preguntan a dónde vas y te mandan a la oficina correcta. Aquí:
 
@@ -114,7 +116,7 @@ import { Routes, Route, Link } from 'react-router'
 
 \`"/"\` es la página principal. Importa todo desde \`'react-router'\`.
 
-Una nota: normalmente se usa \`BrowserRouter\`, que lee y cambia la dirección de la barra del navegador. Aquí usamos \`MemoryRouter\`, que recuerda en qué página vas dentro de la propia app, como un marcador de libro. Funciona igual para el alumno y no depende de la dirección de esta vista previa. Todo lo demás (\`Routes\`, \`Route\`, \`Link\`) es idéntico.
+Una nota: normalmente se usa \`BrowserRouter\`, que lee y cambia la dirección de la barra del navegador. Aquí usamos \`MemoryRouter\`, que recuerda en qué página vas dentro de la propia app, como un marcador de libro. Para ti funciona igual y no depende de la dirección de esta vista previa. Todo lo demás (\`Routes\`, \`Route\`, \`Link\`) es idéntico.
 
 Cada página suele ser un componente en \`/src/pages\`.`,
       challenges: [
@@ -399,7 +401,7 @@ export default function App() {
           checks: [
             {
               type: 'file-exists',
-              pattern: '^/src/pages/NoEncontrada\\.jsx$',
+              pattern: '^/src/pages/NoEncontrada\\.jsx?$',
               label: 'Existe /src/pages/NoEncontrada.jsx',
               message: 'Falta crear el archivo /src/pages/NoEncontrada.jsx.',
             },
@@ -538,7 +540,7 @@ export default function App() {
           id: 'm10-l3-c2',
           title: 'Lee el parámetro y busca el gasto',
           instructions:
-            'Ahora `Detalle.jsx` es una página fija. Haz que lea el `id` de la dirección con `useParams`, busque ese gasto en la lista `GASTOS` (archivo `datos.js`) y muestre su monto con el formato **Monto: 40**. Si el gasto no existe, debe decir **Ese gasto no existe**.',
+            'Ahora `Detalle.jsx` es una página fija. Haz que lea el `id` de la dirección con `useParams`, busque ese gasto en la lista `GASTOS` (archivo `datos.js`) y muestre su monto con el formato **Monto: 40** (para Cena; para Taxi sería **Monto: 80**). Si el gasto no existe, debe decir **Ese gasto no existe**.',
           files: {
             '/src/main.jsx': MAIN_ROUTER,
             '/src/datos.js': DATOS,
@@ -632,7 +634,7 @@ Con eso, tu app de gastos de práctica queda lista para el proyecto final.`,
           id: 'm10-l4-c1',
           title: 'Una lista que lleva al detalle',
           instructions:
-            'La página `Gastos.jsx` solo tiene un título. Haz que muestre una lista (`ul`) con un elemento por cada gasto de `GASTOS`, y que cada nombre sea un `Link` a `/gasto/` + su id. Al hacer clic en **Cena** debe verse **Monto: 40**.',
+            'La página `Gastos.jsx` solo tiene un título. Haz que muestre una lista (`ul`) con un elemento por cada gasto de `GASTOS`, y que cada nombre sea un `Link` a `/gasto/` + su id. Al hacer clic en el menú **Gastos** debe verse **Lista de gastos** con tres elementos, y al hacer clic en **Cena** debe verse **Monto: 40**.',
           files: {
             '/src/main.jsx': MAIN_ROUTER,
             '/src/datos.js': DATOS,
@@ -689,7 +691,12 @@ export default function Gastos() {
 `,
           },
           checks: [
-            { type: 'role', role: 'listitem', min: 3, label: 'La lista tiene un elemento por gasto (3)' },
+            {
+              type: 'interaction',
+              steps: [{ action: 'click', role: 'link', name: 'Gastos' }],
+              expect: { type: 'role', role: 'listitem', min: 3 },
+              label: 'La lista tiene un elemento por gasto (3)',
+            },
             {
               type: 'interaction',
               steps: [
@@ -808,19 +815,19 @@ export default function App() {
           checks: [
             {
               type: 'file-exists',
-              pattern: '^/src/pages/Gastos\\.jsx$',
+              pattern: '^/src/pages/Gastos\\.jsx?$',
               label: 'Existe /src/pages/Gastos.jsx',
               message: 'Falta crear /src/pages/Gastos.jsx.',
             },
             {
               type: 'file-exists',
-              pattern: '^/src/pages/Detalle\\.jsx$',
+              pattern: '^/src/pages/Detalle\\.jsx?$',
               label: 'Existe /src/pages/Detalle.jsx',
               message: 'Falta crear /src/pages/Detalle.jsx.',
             },
             {
               type: 'file-exists',
-              pattern: '^/src/pages/NoEncontrada\\.jsx$',
+              pattern: '^/src/pages/NoEncontrada\\.jsx?$',
               label: 'Existe /src/pages/NoEncontrada.jsx',
               message: 'Falta crear /src/pages/NoEncontrada.jsx.',
             },
