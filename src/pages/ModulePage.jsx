@@ -1,13 +1,13 @@
 import { Link, useParams } from 'react-router'
 import course from '../content/course.js'
-import { isChallengeUnlocked, moduleStats } from '../progress/progress.js'
+import { moduleStats } from '../progress/progress.js'
 import { useProgress } from '../progress/ProgressContext.jsx'
 
 const linkClass = 'font-semibold text-amber-300 underline hover:text-amber-200'
 
 function ChallengeRow({ challenge, state }) {
-  const icon = { done: '✅', open: '▶', locked: '🔒' }[state]
-  const label = { done: 'Hecho', open: 'Disponible', locked: 'Bloqueado' }[state]
+  const icon = state === 'done' ? '✅' : '▶'
+  const label = state === 'done' ? 'Hecho' : 'Disponible'
   const inner = (
     <>
       <span aria-hidden="true">{icon}</span>
@@ -16,9 +16,6 @@ function ChallengeRow({ challenge, state }) {
     </>
   )
   const base = 'flex items-center gap-3 rounded-xl border px-4 py-3'
-  if (state === 'locked') {
-    return <li className={`${base} border-slate-700 bg-slate-800/40 text-slate-400`}>{inner}</li>
-  }
   return (
     <li>
       <Link
@@ -49,9 +46,8 @@ export default function ModulePage() {
     )
   }
 
-  const { done, total } = moduleStats(progress, module, course)
-  const stateOf = (c) =>
-    progress.completed[c.id] ? 'done' : isChallengeUnlocked(progress, course, c.id) ? 'open' : 'locked'
+  const { done, total } = moduleStats(progress, module)
+  const stateOf = (c) => (progress.completed[c.id] ? 'done' : 'open')
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 text-slate-100">

@@ -43,27 +43,19 @@ export function markHintUsed(p, id) {
   return { ...p, hintsUsed: { ...p.hintsUsed, [id]: true } }
 }
 
-// Todos los módulos están abiertos; dentro de un módulo los retos se abren en orden.
-export function isChallengeUnlocked(p, modules, id) {
-  if (p.completed[id]) return true
-  for (const module of modules) {
-    const ids = moduleIds(module)
-    const i = ids.indexOf(id)
-    if (i === -1) continue
-    return i === 0 || Boolean(p.completed[ids[i - 1]])
-  }
-  return false
+// Todos los retos están abiertos desde el inicio, en cualquier orden (solo un id inexistente da false).
+export function isChallengeUnlocked(_p, modules, id) {
+  return modules.some((module) => moduleIds(module).includes(id))
 }
 
 function moduleIds(module) {
   return module.lessons.flatMap((l) => l.challenges.map((c) => c.id))
 }
 
-export function moduleStats(p, module, modules = [module]) {
+export function moduleStats(p, module) {
   const ids = moduleIds(module)
   const done = ids.filter((id) => p.completed[id]).length
-  const unlocked = ids.length > 0 && isChallengeUnlocked(p, modules, ids[0])
-  return { done, total: ids.length, unlocked }
+  return { done, total: ids.length }
 }
 
 export function achievements(p, modules) {

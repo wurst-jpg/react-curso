@@ -44,7 +44,7 @@ test('sin progreso todos los módulos están abiertos, sin candado ni aviso de b
   expect(screen.queryByText(/Bloqueado/)).not.toBeInTheDocument()
   expect(screen.queryByText('🔒')).not.toBeInTheDocument()
   expect(document.body.textContent).not.toContain('🔒')
-  expect(screen.getByText(/dentro de cada módulo los retos se abren en orden/)).toBeInTheDocument()
+  expect(screen.getByText(/Elige cualquier módulo y cualquier reto: todo está abierto\. Te recomendamos seguir el orden, pero puedes saltar al que necesites\./)).toBeInTheDocument()
 })
 
 test('con un reto hecho: 10 XP, Nivel 1 y logro "¡Primer reto!"', () => {

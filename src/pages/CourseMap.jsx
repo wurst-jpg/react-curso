@@ -7,7 +7,7 @@ import { useProgress } from '../progress/ProgressContext.jsx'
 const card = 'flex flex-col gap-3 rounded-2xl border p-5'
 
 function ModuleCard({ module, index, stats }) {
-  const { done, total, unlocked } = stats
+  const { done, total } = stats
   const pct = total ? Math.round((done / total) * 100) : 0
   const body = (
     <>
@@ -17,7 +17,7 @@ function ModuleCard({ module, index, stats }) {
           <h3 className="text-xl font-bold text-slate-50">{module.title}</h3>
         </div>
         <span aria-hidden="true" className="text-2xl">
-          {unlocked ? (done === total ? '🏆' : '▶') : '🔒'}
+          {done === total ? '🏆' : '▶'}
         </span>
       </div>
       <p className="text-sm text-slate-300">{module.summary}</p>
@@ -35,12 +35,8 @@ function ModuleCard({ module, index, stats }) {
         />
       </div>
       <p className="text-sm font-semibold text-slate-200">{`${done} de ${total} retos`}</p>
-      {!unlocked && <p className="text-sm text-slate-300">Bloqueado: termina el módulo anterior para abrirlo.</p>}
     </>
   )
-  if (!unlocked) {
-    return <li className={`${card} border-slate-700 bg-slate-800/50 opacity-70`}>{body}</li>
-  }
   return (
     <li>
       <Link
@@ -105,7 +101,7 @@ export default function CourseMap() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Curso de React</h1>
         <p className="text-slate-300">
-          Elige un módulo y resuelve sus retos. Cada reto superado te da XP; puedes empezar por el módulo que quieras; dentro de cada módulo los retos se abren en orden.
+          Elige cualquier módulo y cualquier reto: todo está abierto. Te recomendamos seguir el orden, pero puedes saltar al que necesites.
         </p>
       </div>
 
@@ -115,7 +111,7 @@ export default function CourseMap() {
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2">
           {course.map((module, i) => (
-            <ModuleCard key={module.id} module={module} index={i} stats={moduleStats(progress, module, course)} />
+            <ModuleCard key={module.id} module={module} index={i} stats={moduleStats(progress, module)} />
           ))}
         </ul>
       </section>

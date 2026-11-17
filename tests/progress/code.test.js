@@ -96,6 +96,18 @@ describe('cadenas de startFrom previous', () => {
   })
 })
 
+describe('saltar directo a un reto con startFrom previous sin progreso', () => {
+  it('sin código guardado de anteriores parte de la referencia limpia', () => {
+    expect(initialFiles(chain, 'c4')).toEqual(cleanStartFiles(chain, 'c4'))
+    expect(initialFiles(chain, 'c4')).toEqual({
+      '/src/main.jsx': 'm',
+      '/src/App.jsx': 'a1-sol',
+      '/src/B.jsx': 'b2',
+      '/src/C.jsx': 'c3',
+    })
+  })
+})
+
 describe('initialFiles', () => {
   it('reto normal sin guardado → files', () => {
     expect(initialFiles(modules, 'c2')).toEqual({ '/a.js': 'a2' })

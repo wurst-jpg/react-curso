@@ -139,11 +139,16 @@ test('"Comprobar" con la vista previa sin cargar avisa y no culpa al código', a
   expect(storedProgress()?.xp ?? 0).toBe(0)
 })
 
-test('reto bloqueado sin progreso muestra el aviso y un enlace al mapa', () => {
+test('un reto avanzado sin progreso se abre directo, sin pantalla de bloqueo', () => {
   renderAt('/reto/m00-l2-c1')
-  expect(screen.getByText(/todavía está bloqueado/i)).toBeInTheDocument()
+  expect(screen.queryByText(/bloqueado/i)).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Comprobar' })).toBeInTheDocument()
+})
+
+test('un id desconocido muestra "No encontré ese reto" con enlace al mapa', () => {
+  renderAt('/reto/no-existe')
+  expect(screen.getByText(/No encontré ese reto/)).toBeInTheDocument()
   expect(screen.getByRole('link', { name: /mapa/i })).toHaveAttribute('href', '/')
-  expect(screen.queryByRole('button', { name: 'Comprobar' })).not.toBeInTheDocument()
 })
 
 test('/src/main.jsx no tiene botón borrar; App.jsx sí', () => {

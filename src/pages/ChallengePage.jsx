@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { SandpackProvider } from '@codesandbox/sandpack-react'
 import course, { findChallenge, flattenChallenges } from '../content/course.js'
-import { isChallengeUnlocked } from '../progress/progress.js'
 import { useProgress } from '../progress/ProgressContext.jsx'
 import { cleanStartFiles, clearCode, initialFiles } from '../progress/code.js'
 import { buildSandboxSetup } from '../sandbox/buildSandbox.js'
@@ -88,25 +87,12 @@ function ChallengeView({ entry, nextChallenge }) {
 
 export default function ChallengePage() {
   const { challengeId } = useParams()
-  const { progress } = useProgress()
   const entry = findChallenge(course, challengeId)
 
   if (!entry) {
     return (
       <Notice>
         <p>No encontré ese reto.</p>
-        <Link to="/" className={linkClass}>
-          Volver al mapa del curso
-        </Link>
-      </Notice>
-    )
-  }
-
-  if (!isChallengeUnlocked(progress, course, challengeId)) {
-    return (
-      <Notice>
-        <h1 className="text-xl font-bold">{entry.challenge.title}</h1>
-        <p>Este reto todavía está bloqueado. Primero supera el reto anterior para abrirlo.</p>
         <Link to="/" className={linkClass}>
           Volver al mapa del curso
         </Link>
